@@ -27,13 +27,33 @@
     <main>
         <!-- Título principal y resumen -->
         <section id="crear-tarea">
-            <!-- Formulario -->
+            <h2>Agregar nueva tarea</h2>
+             <form id="formulario-tarea">
+                <label for="titulo">Nueva tarea:</label>
+                <input 
+                type="text" 
+                id="titulo" 
+                name="titulo" 
+                placeholder="¿Qué necesitas hacer?""
+                minlength="3"
+                required>
+                <button type="submit">Agregar</button>
+             </form>
         </section>
+
         <section id="filtros">
-            <!-- Todas -->
-            <!-- Pendientes -->
-            <!-- Completadas -->
+            <h2>Filtrar tareas</h2>
+            <button type="button" class="filtro activo" data-filtro="todas" aria-pressed="true">
+                Todas
+            </button>
+            <button type="button" class="filtro" data-filtro="pendientes" aria-pressed="false">
+                Pendientes
+            </button>
+            <button type="button" class="filtro" data-filtro="completadas" aria-pressed="false">
+                Completadas
+            </button>
         </section>
+
         <section id="lista-tareas">
             <!-- Lista -->
         </section>
