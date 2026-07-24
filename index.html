@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
     <title>Grade List</title>
 </head>
 <body>
@@ -25,20 +26,26 @@
     </header>
 
     <main>
+
+        <h1>Mis tareas</h1>
+
+        <!-- Área de mensajes -->
+        <div id="mensajes" class="mensaje" aria-live="polite">mensaje</div>
+
         <!-- Título principal y resumen -->
         <section id="crear-tarea">
             <h2>Agregar nueva tarea</h2>
-             <form id="formulario-tarea">
+            <form id="formulario-tarea">
                 <label for="titulo">Nueva tarea:</label>
-                <input 
-                type="text" 
-                id="titulo" 
-                name="titulo" 
-                placeholder="¿Qué necesitas hacer?""
+                <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                placeholder="¿Qué necesitas hacer?"
                 minlength="3"
                 required>
                 <button type="submit">Agregar</button>
-             </form>
+            </form>
         </section>
 
         <section id="filtros">
@@ -56,8 +63,18 @@
 
         <section id="lista-tareas">
             <!-- Lista -->
+            <h2>Lista de tareas</h2>
+            <p id="contador-tareas">Tienes <span id="cantidad-tareas">0</span> tareas pendientes</p>
+            <ul id="tareas">
+                <li class="tarea" data-estado="pendiente">
+                    <label><input type="checkbox" class="checkbox-tarea"><span class="titulo">Tarea de ejemplo</span></label>
+                    <span class="estado">Pendiente</span>
+                    <button type="button" class="editar">Editar</button>
+                    <button type="button" class="eliminar">Eliminar</button>
+                </li>
+            </ul>
         </section>
-        <!-- Área de mensajes -->
+
     </main>
 
     <footer></footer>
