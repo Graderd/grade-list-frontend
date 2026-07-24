@@ -10,13 +10,13 @@
     <header>
         <!-- identidad de la aplicación -->
         <a href="index.html" class="logo">
-            <img src="logo.png" alt="Logo de Grade List">
+            <img src="image/logo4.png" alt="Logo de Grade List">
             <span>Grade List</span>
         </a>
 
         <!-- Informacion del usuario -->
         <div class="usuario">
-            <img src="home.png" alt="Foto de perfil del usuario">
+            <img src="image/perfil-usuario.jpg" alt="Foto de perfil del usuario">
 
             <div class="usuario-info">
                 <p>Hola, Usuario</p>
@@ -25,57 +25,103 @@
         </div>
     </header>
 
-    <main>
+<main>
+    <h1 class="visually-hidden">Mis tareas</h1>
 
-        <h1>Mis tareas</h1>
+    <!-- Tarjeta superior: formulario y filtros -->
+    <div class="panel-controles">
 
-        <!-- Área de mensajes -->
-        <div id="mensajes" class="mensaje" aria-live="polite">mensaje</div>
-
-        <!-- Título principal y resumen -->
         <section id="crear-tarea">
-            <h2>Agregar nueva tarea</h2>
+            <h2 class="visually-hidden">Agregar nueva tarea</h2>
+
             <form id="formulario-tarea">
-                <label for="titulo">Nueva tarea:</label>
+                <label for="titulo" class="visually-hidden">
+                    Nueva tarea
+                </label>
+
                 <input
-                type="text"
-                id="titulo"
-                name="titulo"
-                placeholder="¿Qué necesitas hacer?"
-                minlength="3"
-                required>
+                    type="text"
+                    id="titulo"
+                    name="titulo"
+                    placeholder="¿Qué necesitas hacer?"
+                    minlength="3"
+                    required
+                >
+
                 <button type="submit">Agregar</button>
             </form>
         </section>
 
+        <!-- Mensajes de éxito o error -->
+        <div
+            id="mensajes"
+            class="mensaje"
+            aria-live="polite"
+        ></div>
+
         <section id="filtros">
-            <h2>Filtrar tareas</h2>
-            <button type="button" class="filtro activo" data-filtro="todas" aria-pressed="true">
-                Todas
-            </button>
-            <button type="button" class="filtro" data-filtro="pendientes" aria-pressed="false">
-                Pendientes
-            </button>
-            <button type="button" class="filtro" data-filtro="completadas" aria-pressed="false">
-                Completadas
-            </button>
+            <h2 class="visually-hidden">Filtrar tareas</h2>
+
+            <div class="grupo-filtros">
+                <button
+                    type="button"
+                    class="filtro activo"
+                    data-filtro="todas"
+                    aria-pressed="true"
+                >
+                    Todas
+                </button>
+
+                <button
+                    type="button"
+                    class="filtro"
+                    data-filtro="pendientes"
+                    aria-pressed="false"
+                >
+                    Pendientes
+                </button>
+
+                <button
+                    type="button"
+                    class="filtro"
+                    data-filtro="completadas"
+                    aria-pressed="false"
+                >
+                    Completadas
+                </button>
+            </div>
+
+            <p id="contador-tareas">
+                <span id="cantidad-tareas">0</span> tareas
+            </p>
         </section>
 
-        <section id="lista-tareas">
-            <!-- Lista -->
-            <h2>Lista de tareas</h2>
-            <p id="contador-tareas">Tienes <span id="cantidad-tareas">0</span> tareas pendientes</p>
-            <ul id="tareas">
-                <li class="tarea" data-estado="pendiente">
-                    <label><input type="checkbox" class="checkbox-tarea"><span class="titulo">Tarea de ejemplo</span></label>
-                    <span class="estado">Pendiente</span>
-                    <button type="button" class="editar">Editar</button>
-                    <button type="button" class="eliminar">Eliminar</button>
-                </li>
-            </ul>
-        </section>
+    </div>
 
-    </main>
+    <!-- Tarjeta inferior: lista -->
+    <section id="lista-tareas">
+        <h2 class="visually-hidden">Lista de tareas</h2>
+
+        <ul id="tareas">
+            <li class="tarea" data-estado="pendiente">
+                <label>
+                    <input type="checkbox" class="checkbox-tarea">
+                    <span class="titulo">Tarea de ejemplo</span>
+                </label>
+
+                <span class="estado">Pendiente</span>
+
+                <button type="button" class="editar">
+                    Editar
+                </button>
+
+                <button type="button" class="eliminar">
+                    Eliminar
+                </button>
+            </li>
+        </ul>
+    </section>
+</main>
 
     <footer></footer>
 </body>
