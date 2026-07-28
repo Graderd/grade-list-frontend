@@ -116,6 +116,13 @@ main h1{
     margin-bottom: 20px;
 }
 
+#crear-tarea h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #13172f;
+}
+
 #formulario-tarea {
     display: flex;
     gap: 12px;
@@ -123,19 +130,44 @@ main h1{
 
 #formulario-tarea input {
     flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #13172f;
+    background-color: #ffffff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-#filtros {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+#formulario-tarea input::placeholder {
+    color: #9ca3af;
 }
 
-.grupo-filtros {
-    display: flex;
-    gap: 8px;
+#formulario-tarea input:focus {
+    border-color: #2257eb;
+    box-shadow: 0 0 0 3px rgba(34, 87, 235, 0.15);
+}
+
+#formulario-tarea button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2257eb;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#formulario-tarea button:hover {
+    background-color: #1745c7;
+}
+
+#formulario-tarea button:active {
+    transform: scale(0.98);
 }
 
 #contador-tareas {
@@ -164,4 +196,17 @@ main h1{
     color: #991b1b;
     background-color: #fee2e2;
     border: 1px solid #fca5a5;
+}
+
+#filtros {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.grupo-filtros {
+    display: flex;
+    gap: 8px;
 }
