@@ -1,128 +1,390 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <link rel="stylesheet" href="./css/styles.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+        rel="stylesheet"
+    >
+
     <title>Grade List</title>
 </head>
+
 <body>
+
     <header>
-        <!-- identidad de la aplicación -->
+
+        <!-- Identidad de la aplicación -->
         <a href="index.html" class="logo">
-            <img src="image/logo4.png" alt="Logo de Grade List">
+            <img
+                src="image/logo4.png"
+                alt="Logo de Grade List"
+            >
+
             <span>Grade List</span>
         </a>
 
-        <!-- Informacion del usuario -->
+
+        <!-- Información del usuario -->
         <div class="usuario">
-            <img src="image/perfil-usuario.jpg" alt="Foto de perfil del usuario">
+
+            <img
+                src="image/perfil-usuario.jpg"
+                alt="Foto de perfil del usuario"
+            >
 
             <div class="usuario-info">
+
                 <p>Hola, Usuario</p>
-                <button type="button">Cerrar sesión</button>
+
+                <button type="button">
+
+                    <span
+                        class="material-symbols-outlined"
+                        aria-hidden="true"
+                    >
+                        logout
+                    </span>
+
+                    Cerrar sesión
+
+                </button>
+
             </div>
+
         </div>
+
     </header>
 
-<main>
-    <h1 class="visually-hidden">Mis tareas</h1>
 
-    <!-- Tarjeta superior: formulario y filtros -->
-    <div class="panel-controles">
+    <main>
 
-        <section id="crear-tarea">
-            <h2 >Nueva tarea</h2>
+        <h1 class="visually-hidden">
+            Mis tareas
+        </h1>
 
-            <form id="formulario-tarea">
-                <label for="titulo" class="visually-hidden">
-                    Nueva tarea
-                </label>
 
-                <input
-                    type="text"
-                    id="titulo"
-                    name="titulo"
-                    placeholder="¿Qué necesitas hacer?"
-                    minlength="3"
-                    required
+        <!-- Tarjeta superior: formulario y filtros -->
+        <div class="panel-controles">
+
+
+            <!-- Crear tarea -->
+            <section id="crear-tarea">
+
+                <h2>Nueva tarea</h2>
+
+                <form id="formulario-tarea">
+
+                    <label
+                        for="titulo"
+                        class="visually-hidden"
+                    >
+                        Nueva tarea
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        placeholder="¿Qué necesitas hacer?"
+                        minlength="3"
+                        required
+                    >
+
+                    <button type="submit">
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            add
+                        </span>
+
+                        Agregar
+
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- Mensajes de éxito o error -->
+            <div
+                id="mensajes"
+                class="mensaje"
+                aria-live="polite"
+            ></div>
+
+
+            <!-- Filtros -->
+            <section id="filtros">
+
+                <h2 class="visually-hidden">
+                    Filtrar tareas
+                </h2>
+
+
+                <div class="grupo-filtros">
+
+
+                    <!-- Todas -->
+                    <button
+                        type="button"
+                        class="filtro activo"
+                        data-filtro="todas"
+                        aria-pressed="true"
+                        aria-label="Mostrar todas las tareas"
+                        title="Todas"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            checklist
+                        </span>
+
+                        <span class="texto-filtro">
+                            Todas
+                        </span>
+
+                    </button>
+
+
+                    <!-- Pendientes -->
+                    <button
+                        type="button"
+                        class="filtro"
+                        data-filtro="pendientes"
+                        aria-pressed="false"
+                        aria-label="Mostrar tareas pendientes"
+                        title="Pendientes"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            pending_actions
+                        </span>
+
+                        <span class="texto-filtro">
+                            Pendientes
+                        </span>
+
+                    </button>
+
+
+                    <!-- Completadas -->
+                    <button
+                        type="button"
+                        class="filtro"
+                        data-filtro="completadas"
+                        aria-pressed="false"
+                        aria-label="Mostrar tareas completadas"
+                        title="Completadas"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            task_alt
+                        </span>
+
+                        <span class="texto-filtro">
+                            Completadas
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- Contador -->
+                <p id="contador-tareas">
+
+                    <span id="cantidad-tareas">
+                        0
+                    </span>
+
+                    tareas
+
+                </p>
+
+            </section>
+
+        </div>
+
+
+        <!-- Tarjeta inferior: lista de tareas -->
+        <section id="lista-tareas">
+
+            <h2 class="visually-hidden">
+                Lista de tareas
+            </h2>
+
+
+            <ul id="tareas">
+
+
+                <!-- Tarea pendiente -->
+                <li
+                    class="tarea"
+                    data-estado="pendiente"
                 >
 
-                <button type="submit">Agregar</button>
-            </form>
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            class="checkbox-tarea"
+                        >
+
+                        <span class="titulo">
+                            Tarea de ejemplo
+                        </span>
+
+                    </label>
+
+
+                    <span class="estado">
+                        Pendiente
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="editar"
+                        aria-label="Editar tarea"
+                        title="Editar"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            edit
+                        </span>
+
+                        <span class="texto-boton">
+                            Editar
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="eliminar"
+                        aria-label="Eliminar tarea"
+                        title="Eliminar"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            delete
+                        </span>
+
+                        <span class="texto-boton">
+                            Eliminar
+                        </span>
+
+                    </button>
+
+                </li>
+
+
+                <!-- Tarea completada -->
+                <li
+                    class="tarea"
+                    data-estado="completada"
+                >
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            class="checkbox-tarea"
+                            checked
+                        >
+
+                        <span class="titulo">
+                            Tarea de ejemplo 2
+                        </span>
+
+                    </label>
+
+
+                    <span class="estado">
+                        Completada
+                    </span>
+
+
+                    <button
+                        type="button"
+                        class="editar"
+                        aria-label="Editar tarea"
+                        title="Editar"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            edit
+                        </span>
+
+                        <span class="texto-boton">
+                            Editar
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="eliminar"
+                        aria-label="Eliminar tarea"
+                        title="Eliminar"
+                    >
+
+                        <span
+                            class="material-symbols-outlined"
+                            aria-hidden="true"
+                        >
+                            delete
+                        </span>
+
+                        <span class="texto-boton">
+                            Eliminar
+                        </span>
+
+                    </button>
+
+                </li>
+
+            </ul>
+
         </section>
 
-        <!-- Mensajes de éxito o error -->
-        <div
-            id="mensajes"
-            class="mensaje"
-            aria-live="polite"
-        ></div>
+    </main>
 
-        <section id="filtros">
-            <h2 class="visually-hidden">Filtrar tareas</h2>
-
-            <div class="grupo-filtros">
-                <button
-                    type="button"
-                    class="filtro activo"
-                    data-filtro="todas"
-                    aria-pressed="true"
-                >
-                    Todas
-                </button>
-
-                <button
-                    type="button"
-                    class="filtro"
-                    data-filtro="pendientes"
-                    aria-pressed="false"
-                >
-                    Pendientes
-                </button>
-
-                <button
-                    type="button"
-                    class="filtro"
-                    data-filtro="completadas"
-                    aria-pressed="false"
-                >
-                    Completadas
-                </button>
-            </div>
-
-            <p id="contador-tareas">
-                <span id="cantidad-tareas">0</span> tareas
-            </p>
-        </section>
-
-    </div>
-
-    <!-- Tarjeta inferior: lista -->
-    <section id="lista-tareas">
-        <h2 class="visually-hidden">Lista de tareas</h2>
-
-        <ul id="tareas">
-            <li class="tarea" data-estado="pendiente">
-                <label>
-                    <input type="checkbox" class="checkbox-tarea">
-                    <span class="titulo">Tarea de ejemplo</span>
-                </label>
-
-                <span class="estado">Pendiente</span>
-
-                <button type="button" class="editar">
-                    Editar
-                </button>
-
-                <button type="button" class="eliminar">
-                    Eliminar
-                </button>
-            </li>
-        </ul>
-    </section>
-</main>
 
     <footer></footer>
+
 </body>
+
 </html>

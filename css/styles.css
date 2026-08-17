@@ -1,110 +1,173 @@
-*{
+* {
     box-sizing: border-box;
 }
 
-body{
+/* Material Symbols */
+.material-symbols-outlined {
+    line-height: 1;
+    vertical-align: middle;
+}
+
+
+/* =========================
+   BODY
+========================= */
+
+body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+
     background-color: #F7F8FB;
     color: #13172F;
+
     min-height: 100vh;
 }
 
-header{
+
+/* =========================
+   HEADER
+========================= */
+
+header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 16px 40px;
+
     color: white;
     background-color: #0C309F;
 }
 
-.logo{
+
+/* Logo */
+
+.logo {
     display: flex;
     align-items: center;
     gap: 12px;
+
     text-decoration: none;
     color: white;
 }
 
-.logo img{
+.logo img {
     width: 40px;
     height: 40px;
-    object-fit: cover;
 
+    object-fit: cover;
 }
 
-.usuario{
+
+/* Usuario */
+
+.usuario {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.usuario-info{
+.usuario-info {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.usuario img{
+.usuario img {
     width: 40px;
     height: 40px;
+
     object-fit: cover;
     border-radius: 50%;
 }
 
-.usuario-info p{
+.usuario-info p {
     margin: 0;
+
     font-size: 14px;
     font-weight: bold;
 }
 
-.usuario-info button{
+.usuario-info button {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    padding: 0;
+
+    border: none;
+
     background: none;
     color: white;
-    border: none;
-    padding: 0;
+
     font-size: 12px;
-    text-decoration: underline;
+
     cursor: pointer;
 }
 
-.usuario-info button:hover{
+.usuario-info button .material-symbols-outlined {
+    font-size: 15px;
+}
+
+.usuario-info button:hover {
     color: #D1D5DB;
 }
 
-main{
+
+/* =========================
+   MAIN
+========================= */
+
+main {
     width: 100%;
     max-width: 1100px;
+
     margin: 0 auto;
     padding: 32px 20px;
 }
 
-main h1{
-    font-size: 30px;
-    margin-bottom: 24px;
+main h1 {
     margin-top: 0;
+    margin-bottom: 24px;
+
+    font-size: 30px;
 }
+
+
+/* Elementos visibles solo para lectores de pantalla */
 
 .visually-hidden {
     position: absolute;
+
     width: 1px;
     height: 1px;
+
     padding: 0;
     margin: -1px;
+
     overflow: hidden;
     white-space: nowrap;
+
     border: 0;
+
     clip-path: inset(50%);
 }
 
+
+/* =========================
+   TARJETAS
+========================= */
+
 .panel-controles,
 #lista-tareas {
-    background-color: #ffffff;
     padding: 24px;
-    border: 1px solid #e5e7eb;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
     border-radius: 10px;
+
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -112,73 +175,120 @@ main h1{
     margin-bottom: 20px;
 }
 
+
+/* =========================
+   CREAR TAREA
+========================= */
+
 #crear-tarea {
     margin-bottom: 20px;
 }
 
 #crear-tarea h2 {
     margin: 0 0 16px;
-    font-size: 20px;
+
+    font-size: 16px;
     font-weight: 700;
-    color: #13172f;
+
+    color: #13172F;
 }
+
+
+/* Formulario */
 
 #formulario-tarea {
     display: flex;
+    align-items: stretch;
+
     gap: 12px;
 }
 
 #formulario-tarea input {
     flex: 1;
+
     min-width: 0;
-    padding: 12px 14px;
-    border: 1px solid #d1d5db;
+    height: 45px;
+
+    padding: 0 14px;
+
+    border: 1px solid #D1D5DB;
     border-radius: 8px;
+
+    background-color: #FFFFFF;
+    color: #13172F;
+
     font-size: 15px;
-    color: #13172f;
-    background-color: #ffffff;
+
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 }
 
 #formulario-tarea input::placeholder {
-    color: #9ca3af;
+    color: #9CA3AF;
 }
 
 #formulario-tarea input:focus {
-    border-color: #2257eb;
-    box-shadow: 0 0 0 3px rgba(34, 87, 235, 0.15);
+    border-color: #2257EB;
+
+    box-shadow:
+        0 0 0 3px rgba(34, 87, 235, 0.12);
 }
 
+
+/* Botón agregar */
+
 #formulario-tarea button {
-    padding: 12px 22px;
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    min-width: 110px;
+    height: 45px;
+
+    padding: 0 22px;
+
+    border: 1px solid #2257EB;
     border-radius: 8px;
-    background-color: #2257eb;
-    color: #ffffff;
+
+    background-color: #2257EB;
+    color: #FFFFFF;
+
     font-size: 15px;
     font-weight: 600;
+
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        transform 0.1s;
 }
 
 #formulario-tarea button:hover {
-    background-color: #1745c7;
+    background-color: #1745C7;
+    border-color: #1745C7;
 }
 
 #formulario-tarea button:active {
     transform: scale(0.98);
 }
 
-#contador-tareas {
-    margin: 0;
-    color: #6b7280;
-}
+
+/* =========================
+   MENSAJES
+========================= */
 
 .mensaje {
     padding: 12px 16px;
     margin-bottom: 20px;
+
     border-radius: 8px;
+
     font-size: 14px;
 }
 
@@ -188,25 +298,446 @@ main h1{
 
 .mensaje.exito {
     color: #166534;
-    background-color: #dcfce7;
-    border: 1px solid #86efac;
+
+    background-color: #DCFCE7;
+
+    border: 1px solid #86EFAC;
 }
 
 .mensaje.error {
-    color: #991b1b;
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
+    color: #991B1B;
+
+    background-color: #FEE2E2;
+
+    border: 1px solid #FCA5A5;
 }
+
+
+/* =========================
+   FILTROS
+========================= */
 
 #filtros {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     gap: 16px;
+
     flex-wrap: wrap;
 }
 
 .grupo-filtros {
     display: flex;
+
     gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.filtro {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 8px 16px;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+
+    background-color: #F9FAFB;
+    color: #13172F;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.filtro .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.filtro.activo {
+    background-color: #0C309F;
+    color: #FFFFFF;
+
+    border-color: #0C309F;
+
+    font-weight: 600;
+}
+
+.filtro.activo:hover {
+    background-color: #09277F;
+    border-color: #09277F;
+}
+
+.filtro:hover:not(.activo) {
+    background-color: #EEF3FF;
+    color: #0C309F;
+
+    border-color: #0C309F;
+}
+
+
+/* Contador */
+
+#contador-tareas {
+    margin: 0;
+
+    color: #5F6B7A;
+
+    font-size: 14px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   LISTA DE TAREAS
+========================= */
+
+#tareas {
+    list-style: none;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Cada tarea */
+
+.tarea {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+
+    background-color: #F9FAFB;
+}
+
+
+/* Checkbox + título */
+
+.tarea label {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    flex: 1;
+}
+
+.checkbox-tarea {
+    width: 18px;
+    height: 18px;
+
+    accent-color: #0C309F;
+
+    cursor: pointer;
+}
+
+
+/* Estado */
+
+.estado {
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background-color: #FEF3C7;
+    color: #92400E;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   BOTONES DE TAREA
+========================= */
+
+.tarea button {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s;
+}
+
+.tarea button .material-symbols-outlined {
+    font-size: 18px;
+}
+
+
+/* Editar */
+
+.editar {
+    background-color: #4874F0;
+
+    border: 1px solid #4874F0;
+}
+
+.editar:hover {
+    background-color: #315FDF;
+
+    border-color: #315FDF;
+}
+
+
+/* Eliminar */
+
+.eliminar {
+    background-color: #E04848;
+
+    border: 1px solid #E04848;
+}
+
+.eliminar:hover {
+    background-color: #C93434;
+
+    border-color: #C93434;
+}
+
+
+/* =========================
+   TAREA COMPLETADA
+========================= */
+
+.tarea[data-estado="completada"] {
+    background-color: #F0FDF4;
+
+    border-color: #BBF7D0;
+}
+
+.tarea[data-estado="completada"] .titulo {
+    color: #6B7280;
+
+    text-decoration: line-through;
+}
+
+.tarea[data-estado="completada"] .estado {
+    background-color: #DCFCE7;
+    color: #166534;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+
+    /* Header */
+
+    header {
+        padding: 8px 20px;
+    }
+
+    .logo {
+        gap: 6px;
+    }
+
+    .logo img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .usuario {
+        gap: 6px;
+    }
+
+    .usuario img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .usuario-info p {
+        font-size: 12px;
+    }
+
+    .usuario-info button {
+        font-size: 11px;
+    }
+
+    .usuario-info button .material-symbols-outlined {
+        font-size: 14px;
+    }
+
+
+    /* Main */
+
+    main {
+        padding: 20px 12px;
+    }
+
+
+    /* Tarjetas */
+
+    .panel-controles,
+    #lista-tareas {
+        padding: 12px;
+    }
+
+    .panel-controles {
+        margin-bottom: 10px;
+    }
+
+
+    /* Crear tarea */
+
+    #crear-tarea {
+        margin-bottom: 10px;
+    }
+
+    #crear-tarea h2 {
+        margin: 0 0 10px;
+
+        font-size: 13px;
+    }
+
+
+    /* Formulario */
+
+    #formulario-tarea {
+        gap: 6px;
+    }
+
+    #formulario-tarea input {
+        height: 42px;
+
+        padding: 0 12px;
+
+        font-size: 14px;
+    }
+
+    #formulario-tarea button {
+        min-width: 105px;
+        height: 42px;
+
+        padding: 0 12px;
+
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* Filtros */
+
+    #filtros {
+        gap: 10px;
+    }
+
+    .filtro .texto-filtro {
+        display: none;
+    }
+
+    .filtro {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 36px;
+        height: 36px;
+
+        padding: 0;
+    }
+
+    .filtro .material-symbols-outlined {
+        font-size: 19px;
+    }
+
+
+    /* Contador */
+
+    #contador-tareas {
+        margin: 0;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+    }
+
+
+    /* Tareas */
+
+    .tarea {
+        gap: 6px;
+
+        padding: 7px;
+    }
+
+    .tarea label {
+        min-width: 0;
+
+        gap: 8px;
+    }
+
+    .tarea .titulo {
+        font-size: 14px;
+
+        line-height: 1.15;
+
+        overflow-wrap: anywhere;
+    }
+
+
+    /* Estado */
+
+    .estado {
+        padding: 4px 7px;
+
+        font-size: 10px;
+
+        white-space: nowrap;
+    }
+
+
+    /* Ocultar texto de botones */
+
+    .tarea .texto-boton {
+        display: none;
+    }
+
+
+    /* Botones editar/eliminar */
+
+    .tarea button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 32px;
+        height: 32px;
+
+        padding: 0;
+
+        flex-shrink: 0;
+    }
+
+    .tarea button .material-symbols-outlined {
+        font-size: 17px;
+    }
 }
