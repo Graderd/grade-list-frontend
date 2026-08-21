@@ -169,7 +169,6 @@ filtros.forEach((boton) =>{
     boton.addEventListener("click", () =>{
         filtros.forEach((b) => b.classList.remove("activo"));
         boton.classList.add("activo");
-        console.log(`Filtro seleccionado: ${boton.dataset.filtro}`);
         const filtroSeleccionado = boton.dataset.filtro;
         filtrarTareas(filtroSeleccionado);
     });
@@ -191,7 +190,6 @@ function filtrarTareas(filtro) {
             tarea.style.display = "flex";
             contarTareas();
         }
-        console.log(filtro);
     });
 }
 
