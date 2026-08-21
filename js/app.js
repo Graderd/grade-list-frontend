@@ -35,6 +35,10 @@ formulario.addEventListener("submit", (e) => {
 
     tituloInput.value = "";
     
+    const filtroActivo = document.querySelector(".filtro.activo");
+    const filtroSeleccionado = filtroActivo.dataset.filtro;
+
+    filtrarTareas(filtroSeleccionado);
     contarTareas();
 });
 
