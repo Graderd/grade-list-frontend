@@ -2,6 +2,9 @@ const formulario = document.getElementById("formulario-tarea");
 const tituloInput = document.getElementById("titulo");
 const mensajeInput = document.getElementById("mensajes");
 const tareas = document.getElementById("tareas");
+const contadorTareas = document.getElementById("cantidad-tareas");
+const textoContador = document.getElementById("texto-contador");
+const filtros = document.querySelectorAll(".filtro");
 
 formulario.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -30,9 +33,9 @@ formulario.addEventListener("submit", (e) => {
 
     crearTarea(titulo);
 
-    console.log("Tarea agregada:", titulo);
-
     tituloInput.value = "";
+    
+    contarTareas();
 });
 
 function crearTarea(titulo) {
@@ -116,6 +119,75 @@ function crearTarea(titulo) {
             nuevaTarea.dataset.estado = "pendiente";
             estadoTarea.textContent = "Pendiente";
         }  
+
+        const filtroActivo = document.querySelector(".filtro.activo");
+        const filtroSeleccionado = filtroActivo.dataset.filtro;
+
+        filtrarTareas(filtroSeleccionado);
+        contarTareas();
+    });
+
+    eliminarBtn.addEventListener("click", () => {
+        eliminarTarea(nuevaTarea);
+    });
+}
+
+function eliminarTarea(tarea){
+    tarea.remove();
+    contarTareas();
+}
+
+function contarTareas() {
+    const filtroActivo = document.querySelector(".filtro.activo");
+    const filtroSeleccionado = filtroActivo.dataset.filtro;
+
+    let cantidadTareas;
+
+    if (filtroSeleccionado === "todas") {
+        cantidadTareas = tareas.children.length;
+
+    } else if (filtroSeleccionado === "pendientes") {
+        cantidadTareas = Array.from(tareas.children)
+            .filter((tarea) => tarea.dataset.estado === "pendiente")
+            .length;
+
+    } else if (filtroSeleccionado === "completadas") {
+        cantidadTareas = Array.from(tareas.children)
+            .filter((tarea) => tarea.dataset.estado === "completada")
+            .length;
+    }
+
+    contadorTareas.textContent = cantidadTareas;
+    textoContador.textContent = cantidadTareas === 1 ? "tarea" : "tareas";
+}
+
+filtros.forEach((boton) =>{
+    boton.addEventListener("click", () =>{
+        filtros.forEach((b) => b.classList.remove("activo"));
+        boton.classList.add("activo");
+        console.log(`Filtro seleccionado: ${boton.dataset.filtro}`);
+        const filtroSeleccionado = boton.dataset.filtro;
+        filtrarTareas(filtroSeleccionado);
+    });
+});
+
+function filtrarTareas(filtro) {
+    const todasLasTareas = document.querySelectorAll(".tarea");
+
+    todasLasTareas.forEach((tarea) => {
+        if (filtro === "pendientes"){
+            tarea.dataset.estado === "pendiente" ? tarea.style.display = "flex" : tarea.style.display = "none"; 
+            contarTareas();
+        }
+        else if (filtro === "completadas"){
+            tarea.dataset.estado === "completada" ? tarea.style.display = "flex" : tarea.style.display = "none"; 
+            contarTareas();
+        }
+        else if (filtro === "todas"){
+            tarea.style.display = "flex";
+            contarTareas();
+        }
+        console.log(filtro);
     });
 }
 
