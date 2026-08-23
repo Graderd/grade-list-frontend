@@ -741,3 +741,18 @@ main h1 {
         font-size: 17px;
     }
 }
+
+.input-editar {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    padding: 2px 4px;
+}
+
+.input-editar:focus {
+    box-shadow: 0 2px 0 #0C309F;
+}
