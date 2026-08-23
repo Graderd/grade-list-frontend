@@ -5,6 +5,7 @@ const tareas = document.getElementById("tareas");
 const contadorTareas = document.getElementById("cantidad-tareas");
 const textoContador = document.getElementById("texto-contador");
 const filtros = document.querySelectorAll(".filtro");
+let edicionActiva = null;
 
 formulario.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -14,19 +15,11 @@ formulario.addEventListener("submit", (e) => {
     mensajeInput.textContent = "";
     mensajeInput.className = "mensaje";
 
-    if (titulo === "") {
-        mensajeInput.textContent = "El título no puede estar vacío.";
-        mensajeInput.className = "mensaje error";
-        return;
-    } else if (titulo.length < 3) {
-        mensajeInput.textContent = "El título debe tener al menos 3 caracteres.";
-        mensajeInput.className = "mensaje error";
-        return;
-    } else if (titulo.length > 50) {
-        mensajeInput.textContent = "El título no puede tener más de 50 caracteres.";
-        mensajeInput.className = "mensaje error";
+    if (!validarTitulo(titulo)) {
         return;
     }
+
+    cancelarEdicion();
 
     mensajeInput.textContent = "Tarea agregada correctamente.";
     mensajeInput.className = "mensaje exito";
@@ -39,7 +32,6 @@ formulario.addEventListener("submit", (e) => {
     const filtroSeleccionado = filtroActivo.dataset.filtro;
 
     filtrarTareas(filtroSeleccionado);
-    contarTareas();
 });
 
 function crearTarea(titulo) {
@@ -116,22 +108,83 @@ function crearTarea(titulo) {
 
     // Agregar evento al checkbox para cambiar el estado de la tarea
     checkbox.addEventListener("change", () => {
+        cancelarEdicion();
+
         if (checkbox.checked) {
             nuevaTarea.dataset.estado = "completada";
             estadoTarea.textContent = "Completada";
         } else {
             nuevaTarea.dataset.estado = "pendiente";
             estadoTarea.textContent = "Pendiente";
-        }  
+        }
 
         const filtroActivo = document.querySelector(".filtro.activo");
         const filtroSeleccionado = filtroActivo.dataset.filtro;
 
         filtrarTareas(filtroSeleccionado);
-        contarTareas();
+    });
+
+    //editar tarea
+    editarBtn.addEventListener("click", () => {
+        mensajeInput.textContent = "";
+        mensajeInput.className = "mensaje";
+
+        if (edicionActiva) {
+            edicionActiva.inputEditar.focus();
+            return;
+        }
+
+        const inputEditar = document.createElement("input");
+
+        inputEditar.value = tituloTarea.textContent;
+        inputEditar.classList.add("input-editar");
+
+        label.replaceChild(inputEditar, tituloTarea);
+
+        inputEditar.focus();
+        inputEditar.select();
+
+        edicionActiva = {
+            label,
+            tituloTarea,
+            inputEditar
+        }
+
+        inputEditar.addEventListener("keydown", (e) => {
+            if(e.key === "Enter"){
+                //aqui
+                const nuevoTitulo = inputEditar.value.trim();
+
+                mensajeInput.textContent = "";
+                mensajeInput.className = "mensaje";
+
+                if (!validarTitulo(nuevoTitulo)) {
+                    return;
+                }
+
+                tituloTarea.textContent = nuevoTitulo;
+                label.replaceChild(tituloTarea, inputEditar);
+
+                edicionActiva = null;
+
+                mensajeInput.textContent = "Tarea actualizada correctamente.";
+                mensajeInput.className = "mensaje exito";
+
+                console.log("Nuevo titulo:", nuevoTitulo);
+            }
+            else if(e.key === "Escape"){
+                cancelarEdicion();
+            }
+        });
+
     });
 
     eliminarBtn.addEventListener("click", () => {
+        if (edicionActiva) {
+            edicionActiva.inputEditar.focus();
+            return;
+        }
+
         eliminarTarea(nuevaTarea);
     });
 }
@@ -140,6 +193,7 @@ function eliminarTarea(tarea){
     tarea.remove();
     contarTareas();
 }
+
 
 function contarTareas() {
     const filtroActivo = document.querySelector(".filtro.activo");
@@ -165,10 +219,14 @@ function contarTareas() {
     textoContador.textContent = cantidadTareas === 1 ? "tarea" : "tareas";
 }
 
-filtros.forEach((boton) =>{
-    boton.addEventListener("click", () =>{
+filtros.forEach((boton) => {
+    boton.addEventListener("click", () => {
+
+        cancelarEdicion();
+
         filtros.forEach((b) => b.classList.remove("activo"));
         boton.classList.add("activo");
+
         const filtroSeleccionado = boton.dataset.filtro;
         filtrarTareas(filtroSeleccionado);
     });
@@ -179,17 +237,46 @@ function filtrarTareas(filtro) {
 
     todasLasTareas.forEach((tarea) => {
         if (filtro === "pendientes"){
-            tarea.dataset.estado === "pendiente" ? tarea.style.display = "flex" : tarea.style.display = "none"; 
-            contarTareas();
+            tarea.dataset.estado === "pendiente" ? tarea.style.display = "flex" : tarea.style.display = "none";
         }
         else if (filtro === "completadas"){
-            tarea.dataset.estado === "completada" ? tarea.style.display = "flex" : tarea.style.display = "none"; 
-            contarTareas();
+            tarea.dataset.estado === "completada" ? tarea.style.display = "flex" : tarea.style.display = "none";
         }
         else if (filtro === "todas"){
             tarea.style.display = "flex";
-            contarTareas();
         }
     });
+    contarTareas();
 }
 
+function validarTitulo(titulo) {
+    if (titulo === "") {
+        mensajeInput.textContent = "El título no puede estar vacío.";
+        mensajeInput.className = "mensaje error";
+        return false;
+
+    } else if (titulo.length < 3) {
+        mensajeInput.textContent = "El título debe tener al menos 3 caracteres.";
+        mensajeInput.className = "mensaje error";
+        return false;
+
+    } else if (titulo.length > 50) {
+        mensajeInput.textContent = "El título no puede tener más de 50 caracteres.";
+        mensajeInput.className = "mensaje error";
+        return false;
+    }
+
+    return true;
+}
+
+function cancelarEdicion() {
+    if (!edicionActiva) {
+        return;
+    }
+
+    const { label, tituloTarea, inputEditar } = edicionActiva;
+
+    label.replaceChild(tituloTarea, inputEditar);
+
+    edicionActiva = null;
+}
