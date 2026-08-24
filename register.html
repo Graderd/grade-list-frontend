@@ -1,24 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade list resgister</title>
+    <title>Grade List - Registro</title>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/auth.css">
+
 </head>
 <body>
     <main>
         <section id="tarjeta-registro">
-            <a href="register.html" class="logo ">
-                <img
-                src="/image/logo4.png"
-                alt="Foto de perfil del usuario">
-
-                <span>Grade List</span>
-            </a>
             
+            <div class="auth-logo">
+                <img src="./image/logo4.png" alt="Logo de Grade List">
+                <span>Grade List</span>
+            </div>
+
+            <h1 class="visually-hidden">Crear cuenta</h1>
+
+            <p>Crea tu cuenta para comenzar.</p>
+
+            <div id="mensajes" class="mensaje" aria-live="polite"></div>
+
+            <form id="formulario-registro" novalidate>
+                <div class="form-input">
+                <label for="nombre">
+                    Nombre completo
+                </label>
+
+                    <div class="input-icono">
+                        <span class="material-symbols-outlined">person</span>
+                        <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Tu nombre completo"
+                        minlength="3"
+                        maxlength="100"
+                        required
+                    >
+                    </div>
+                </div>
+
+                <div class="form-input">
+                <label for="correo">
+                    Correo electrónico
+                </label>
+
+                    <div class="input-icono">
+                        <span class="material-symbols-outlined">mail</span>
+                        <input
+                        type="email"
+                        id="correo"
+                        name="email"
+                        placeholder="ejemplo@correo.com"
+                        maxlength="255"
+                        required
+                    >
+                    </div>
+                </div>
+
+                <div class="form-input">
+                <label for="password">
+                    Contraseña
+                </label>
+
+                    <div class="input-icono">
+                        <span class="material-symbols-outlined">lock</span>
+                        <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        minlength="8"
+                        maxlength="72"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="mostrar-password"
+                        aria-label="Mostrar contraseña"
+                    >
+                        <span class="material-symbols-outlined">visibility</span>
+                    </button>
+                    </div>
+                </div>
+
+                <div class="form-input">
+                <label for="confirmarPassword">
+                    Confirmar contraseña
+                </label>
+
+                <div class="input-icono">
+                    <span class="material-symbols-outlined">lock</span>
+                    <input
+                    type="password"
+                    id="confirmarPassword"
+                    name="confirmarPassword"
+                    minlength="8"
+                    maxlength="72"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="mostrar-password"
+                    aria-label="Mostrar contraseña"
+                >
+                    <span class="material-symbols-outlined">visibility</span>
+                </button>
+                </div>
+                
+                </div>
+                
+                <button type="submit" class="boton-registro">
+                    Crear cuenta
+                </button>
+            </form>
+
+            <div class="separador">
+                <span></span>
+                <p>o</p>
+                <span></span>
+            </div>
+
+            <p>
+                ¿Ya tienes una cuenta? <a href="login.html">Iniciar sesión</a>
+            </p>
         </section>
     </main>
+
+    <script src="./js/register.js"></script>
 </body>
 </html>
