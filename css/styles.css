@@ -468,57 +468,44 @@ main h1 {
 ========================= */
 
 .tarea button {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-
     gap: 6px;
 
-    padding: 6px 10px;
-
-    border-radius: 6px;
-
-    color: white;
-
-    font-size: 13px;
-    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 6px 4px;
 
     cursor: pointer;
-
-    transition: background-color 0.2s;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .tarea button .material-symbols-outlined {
     font-size: 18px;
+    line-height: 1;
 }
 
 
 /* Editar */
 
 .editar {
-    background-color: #4874F0;
-
-    border: 1px solid #4874F0;
+    color: #2563EB;
 }
 
 .editar:hover {
-    background-color: #315FDF;
-
-    border-color: #315FDF;
+    color: #1D4ED8;
 }
 
 
 /* Eliminar */
 
 .eliminar {
-    background-color: #E04848;
-
-    border: 1px solid #E04848;
+    color: #EF4444;
 }
 
 .eliminar:hover {
-    background-color: #C93434;
-
-    border-color: #C93434;
+    color: #DC2626;
 }
 
 
@@ -739,6 +726,7 @@ main h1 {
 
     .tarea button .material-symbols-outlined {
         font-size: 17px;
+        line-height: 1;
     }
 }
 
