@@ -25,7 +25,7 @@ botonesPassword.forEach((boton) => {
     });
 });
 
-formularioRegistro.addEventListener("submit", (e) => {
+formularioRegistro.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     mensajeInput.textContent = "";
@@ -101,6 +101,37 @@ formularioRegistro.addEventListener("submit", (e) => {
         mensajeInput.textContent = "Las contraseñas no coinciden.";
         mensajeInput.className = "mensaje error";
         return;
+    }
+
+    try {
+        const respuesta = await fetch("http://api.home/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre,
+                email: correo,
+                password
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        mensajeInput.textContent = datos.message;
+        mensajeInput.className = "mensaje exito";
+
+        formularioRegistro.reset();
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudo conectar con el servidor.";
+        mensajeInput.className = "mensaje error";
     }
 
 });
