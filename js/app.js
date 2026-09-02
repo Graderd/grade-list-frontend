@@ -7,6 +7,8 @@ const textoContador = document.getElementById("texto-contador");
 const filtros = document.querySelectorAll(".filtro");
 const botonCerrarSesion = document.getElementById("cerrar-sesion");
 const botonAgregar = formulario.querySelector('button[type="submit"]');
+const textoBotonAgregar = botonAgregar.querySelector(".texto-agregar");
+const textoOriginalBoton = textoBotonAgregar.textContent;
 
 let edicionActiva = null;
 
@@ -42,6 +44,8 @@ formulario.addEventListener("submit", async (e) => {
     }
 
     botonAgregar.disabled = true;
+    textoBotonAgregar.textContent = "Agregando...";
+
     cancelarEdicion();
 
     try {
@@ -89,6 +93,7 @@ formulario.addEventListener("submit", async (e) => {
         mensajeInput.className = "mensaje error";
     } finally {
         botonAgregar.disabled = false;
+        textoBotonAgregar.textContent = textoOriginalBoton;
     }
 });
 
@@ -265,7 +270,6 @@ function crearTarea(titulo, id = null, completada = false) {
             if(e.key === "Enter"){
                 //aqui
                 const nuevoTitulo = inputEditar.value.trim();
-                inputEditar.disabled = true;
 
                 mensajeInput.textContent = "";
                 mensajeInput.className = "mensaje";
@@ -273,6 +277,8 @@ function crearTarea(titulo, id = null, completada = false) {
                 if (!validarTitulo(nuevoTitulo)) {
                     return;
                 }
+
+                inputEditar.disabled = true;
 
                 const idTarea = nuevaTarea.dataset.id;
 
@@ -300,7 +306,6 @@ function crearTarea(titulo, id = null, completada = false) {
                     if (!respuesta.ok) {
                         mensajeInput.textContent = datos.error;
                         mensajeInput.className = "mensaje error";
-                        inputEditar.focus();
                         return;
                     }
 
@@ -316,7 +321,6 @@ function crearTarea(titulo, id = null, completada = false) {
                 } catch (error) {
                     mensajeInput.textContent = "No se pudo actualizar la tarea.";
                     mensajeInput.className = "mensaje error";
-                    inputEditar.focus();
                 } finally {
                     inputEditar.disabled = false;
                 }
