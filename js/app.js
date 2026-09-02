@@ -5,7 +5,28 @@ const tareas = document.getElementById("tareas");
 const contadorTareas = document.getElementById("cantidad-tareas");
 const textoContador = document.getElementById("texto-contador");
 const filtros = document.querySelectorAll(".filtro");
+const botonCerrarSesion = document.getElementById("cerrar-sesion");
+
 let edicionActiva = null;
+
+const token = sessionStorage.getItem("token");
+const usuarioGuardado = sessionStorage.getItem("usuario");
+
+if (!token || !usuarioGuardado) {
+    window.location.href = "login.html";
+}
+
+const nombreUsuario = document.getElementById("nombre-usuario");
+
+if (usuarioGuardado) {
+    const usuario = JSON.parse(usuarioGuardado);
+    nombreUsuario.textContent = `Hola, ${usuario.nombre}`;
+}
+
+botonCerrarSesion.addEventListener("click", () => {
+    sessionStorage.clear();
+    window.location.href = "login.html";
+});
 
 formulario.addEventListener("submit", (e) => {
     e.preventDefault();

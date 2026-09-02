@@ -77,7 +77,19 @@ formularioLogin.addEventListener("submit", async (e) => {
 
         const datos = await respuesta.json();
 
-        console.log(datos);
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        mensajeInput.textContent = datos.message;
+        mensajeInput.className = "mensaje exito";
+
+        sessionStorage.setItem("token", datos.token);
+        sessionStorage.setItem("usuario", JSON.stringify(datos.data));
+
+        window.location.href = "index.html";
 
     } catch (error) {
         mensajeInput.textContent = "No se pudo conectar con el servidor.";
