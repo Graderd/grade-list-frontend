@@ -6,6 +6,7 @@ const contadorTareas = document.getElementById("cantidad-tareas");
 const textoContador = document.getElementById("texto-contador");
 const filtros = document.querySelectorAll(".filtro");
 const botonCerrarSesion = document.getElementById("cerrar-sesion");
+const botonAgregar = formulario.querySelector('button[type="submit"]');
 
 let edicionActiva = null;
 
@@ -40,6 +41,7 @@ formulario.addEventListener("submit", async (e) => {
         return;
     }
 
+    botonAgregar.disabled = true;
     cancelarEdicion();
 
     try {
@@ -85,6 +87,8 @@ formulario.addEventListener("submit", async (e) => {
     } catch (error) {
         mensajeInput.textContent = "No se pudo crear la tarea.";
         mensajeInput.className = "mensaje error";
+    } finally {
+        botonAgregar.disabled = false;
     }
 });
 
@@ -180,10 +184,11 @@ function crearTarea(titulo, id = null, completada = false) {
         cancelarEdicion();
 
         const idTarea = nuevaTarea.dataset.id;
+        checkbox.disabled = true;
 
         try {
             const respuesta = await fetch(
-                `http://api.home/api/tareas/${idTarea}/toggle`,
+                `${API_URL}/api/tareas/${idTarea}/toggle`,
                 {
                     method: "PATCH",
                     headers: {
@@ -212,6 +217,8 @@ function crearTarea(titulo, id = null, completada = false) {
             mensajeInput.textContent = "No se pudo actualizar el estado de la tarea.";
             mensajeInput.className = "mensaje error";
             return;
+        } finally {
+            checkbox.disabled = false;
         }
 
         if (checkbox.checked) {
@@ -258,6 +265,7 @@ function crearTarea(titulo, id = null, completada = false) {
             if(e.key === "Enter"){
                 //aqui
                 const nuevoTitulo = inputEditar.value.trim();
+                inputEditar.disabled = true;
 
                 mensajeInput.textContent = "";
                 mensajeInput.className = "mensaje";
@@ -309,6 +317,8 @@ function crearTarea(titulo, id = null, completada = false) {
                     mensajeInput.textContent = "No se pudo actualizar la tarea.";
                     mensajeInput.className = "mensaje error";
                     inputEditar.focus();
+                } finally {
+                    inputEditar.disabled = false;
                 }
             }
             else if(e.key === "Escape"){
@@ -325,6 +335,7 @@ function crearTarea(titulo, id = null, completada = false) {
         }
 
         const idTarea = nuevaTarea.dataset.id;
+        eliminarBtn.disabled = true;
 
         try {
             const respuesta = await fetch(
@@ -357,6 +368,8 @@ function crearTarea(titulo, id = null, completada = false) {
         } catch (error) {
             mensajeInput.textContent = "No se pudo eliminar la tarea.";
             mensajeInput.className = "mensaje error";
+        } finally {
+            eliminarBtn.disabled = false;
         }
     });
 }
