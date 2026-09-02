@@ -366,8 +366,14 @@ function crearTarea(titulo, id = null, completada = false) {
 
             eliminarTarea(nuevaTarea);
 
-            mensajeInput.textContent = datos.message || "Tarea eliminada correctamente.";
-            mensajeInput.className = "mensaje exito";
+            if (tareas.children.length === 0) {
+                mensajeInput.textContent = "No tienes tareas todavía.";
+                mensajeInput.className = "mensaje";
+            } else {
+                mensajeInput.textContent =
+                    datos.message || "Tarea eliminada correctamente.";
+                mensajeInput.className = "mensaje exito";
+            }
 
         } catch (error) {
             mensajeInput.textContent = "No se pudo eliminar la tarea.";
@@ -471,6 +477,9 @@ function cancelarEdicion() {
 }
 
 async function cargarTareas() {
+    mensajeInput.textContent = "Cargando tareas...";
+    mensajeInput.className = "mensaje";
+
     try {
         const respuesta = await fetch(`${API_URL}/api/tareas`, {
             headers: {
@@ -491,6 +500,14 @@ async function cargarTareas() {
         }
 
         tareas.innerHTML = "";
+
+        if (datos.data.length === 0) {
+            mensajeInput.textContent = "No tienes tareas todavía.";
+            mensajeInput.className = "mensaje";
+        } else {
+            mensajeInput.textContent = "";
+            mensajeInput.className = "mensaje";
+        }
 
         datos.data.forEach((tarea) => {
             crearTarea(
