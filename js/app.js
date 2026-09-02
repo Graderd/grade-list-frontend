@@ -43,7 +43,7 @@ formulario.addEventListener("submit", async (e) => {
     cancelarEdicion();
 
     try {
-        const respuesta = await fetch("http://api.home/api/tareas", {
+        const respuesta = await fetch(`${API_URL}/api/tareas`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -270,7 +270,7 @@ function crearTarea(titulo, id = null, completada = false) {
 
                 try {
                     const respuesta = await fetch(
-                        `http://api.home/api/tareas/${idTarea}`,
+                        `${API_URL}/api/tareas/${idTarea}`,
                         {
                             method: "PUT",
                             headers: {
@@ -328,7 +328,7 @@ function crearTarea(titulo, id = null, completada = false) {
 
         try {
             const respuesta = await fetch(
-                `http://api.home/api/tareas/${idTarea}`,
+                `${API_URL}/api/tareas/${idTarea}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -455,7 +455,7 @@ function cancelarEdicion() {
 
 async function cargarTareas() {
     try {
-        const respuesta = await fetch("http://api.home/api/tareas", {
+        const respuesta = await fetch(`${API_URL}/api/tareas`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }

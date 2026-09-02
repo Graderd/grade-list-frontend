@@ -104,7 +104,7 @@ formularioRegistro.addEventListener("submit", async (e) => {
     }
 
     try {
-        const respuesta = await fetch("http://api.home/auth/register", {
+        const respuesta = await fetch(`${API_URL}/auth/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

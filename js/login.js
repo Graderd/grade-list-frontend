@@ -64,7 +64,7 @@ formularioLogin.addEventListener("submit", async (e) => {
     }
 
     try {
-        const respuesta = await fetch("http://api.home/auth/login", {
+        const respuesta = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
