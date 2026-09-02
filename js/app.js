@@ -338,6 +338,12 @@ function crearTarea(titulo, id = null, completada = false) {
             return;
         }
 
+        const confirmarEliminacion = confirm("¿Seguro que quieres eliminar esta tarea?");
+
+        if (!confirmarEliminacion) {
+            return;
+        }
+
         const idTarea = nuevaTarea.dataset.id;
         eliminarBtn.disabled = true;
 
