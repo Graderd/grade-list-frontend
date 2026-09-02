@@ -82,7 +82,7 @@ header {
     border-radius: 50%;
 }
 
-.usuario-info p {
+.usuario-info span {
     margin: 0;
 
     font-size: 14px;

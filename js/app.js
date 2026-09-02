@@ -28,7 +28,7 @@ botonCerrarSesion.addEventListener("click", () => {
     window.location.href = "login.html";
 });
 
-formulario.addEventListener("submit", (e) => {
+formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const titulo = tituloInput.value.trim();
@@ -42,29 +42,63 @@ formulario.addEventListener("submit", (e) => {
 
     cancelarEdicion();
 
-    mensajeInput.textContent = "Tarea agregada correctamente.";
-    mensajeInput.className = "mensaje exito";
+    try {
+        const respuesta = await fetch("http://api.home/api/tareas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                titulo
+            })
+        });
 
-    crearTarea(titulo);
+        const datos = await respuesta.json();
 
-    tituloInput.value = "";
-    
-    const filtroActivo = document.querySelector(".filtro.activo");
-    const filtroSeleccionado = filtroActivo.dataset.filtro;
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
 
-    filtrarTareas(filtroSeleccionado);
+        crearTarea(
+            datos.data.titulo,
+            datos.data.id,
+            false
+        );
+
+        mensajeInput.textContent = datos.message;
+        mensajeInput.className = "mensaje exito";
+
+        tituloInput.value = "";
+
+        const filtroActivo = document.querySelector(".filtro.activo");
+        const filtroSeleccionado = filtroActivo.dataset.filtro;
+
+        filtrarTareas(filtroSeleccionado);
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudo crear la tarea.";
+        mensajeInput.className = "mensaje error";
+    }
 });
 
-function crearTarea(titulo) {
+function crearTarea(titulo, id = null, completada = false) {
     const nuevaTarea = document.createElement("li");
     nuevaTarea.classList.add("tarea");
-    nuevaTarea.dataset.estado = "pendiente";
+    nuevaTarea.dataset.estado = completada ? "completada" : "pendiente";
+
+    if (id !== null) {
+        nuevaTarea.dataset.id = id;
+    }
 
     const label = document.createElement("label");
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.classList.add("checkbox-tarea");
+    checkbox.checked = completada;
 
     const tituloTarea = document.createElement("span");
     tituloTarea.classList.add("titulo");
@@ -78,7 +112,7 @@ function crearTarea(titulo) {
     // Agregar el estado de la tarea
     const estadoTarea = document.createElement("span");
     estadoTarea.classList.add("estado");
-    estadoTarea.textContent = "Pendiente";
+    estadoTarea.textContent = completada ? "Completada" : "Pendiente";
     nuevaTarea.appendChild(estadoTarea);
 
     // Agregar botones de editar y eliminar
@@ -128,8 +162,27 @@ function crearTarea(titulo) {
     tareas.appendChild(nuevaTarea);
 
     // Agregar evento al checkbox para cambiar el estado de la tarea
-    checkbox.addEventListener("change", () => {
+    checkbox.addEventListener("change", async () => {
         cancelarEdicion();
+
+        const idTarea = nuevaTarea.dataset.id;
+
+        try {
+            const respuesta = await fetch(
+                `http://api.home/api/tareas/${idTarea}/toggle`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const datos = await respuesta.json();
+
+        } catch (error) {
+            console.error(error);
+        }
 
         if (checkbox.checked) {
             nuevaTarea.dataset.estado = "completada";
@@ -171,7 +224,7 @@ function crearTarea(titulo) {
             inputEditar
         }
 
-        inputEditar.addEventListener("keydown", (e) => {
+        inputEditar.addEventListener("keydown", async (e) => {
             if(e.key === "Enter"){
                 //aqui
                 const nuevoTitulo = inputEditar.value.trim();
@@ -183,15 +236,46 @@ function crearTarea(titulo) {
                     return;
                 }
 
-                tituloTarea.textContent = nuevoTitulo;
-                label.replaceChild(tituloTarea, inputEditar);
+                const idTarea = nuevaTarea.dataset.id;
 
-                edicionActiva = null;
+                try {
+                    const respuesta = await fetch(
+                        `http://api.home/api/tareas/${idTarea}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                titulo: nuevoTitulo
+                            })
+                        }
+                    );
 
-                mensajeInput.textContent = "Tarea actualizada correctamente.";
-                mensajeInput.className = "mensaje exito";
+                    const datos = await respuesta.json();
 
-                console.log("Nuevo titulo:", nuevoTitulo);
+                    if (!respuesta.ok) {
+                        mensajeInput.textContent = datos.error;
+                        mensajeInput.className = "mensaje error";
+                        inputEditar.focus();
+                        return;
+                    }
+
+                    tituloTarea.textContent = nuevoTitulo;
+                    label.replaceChild(tituloTarea, inputEditar);
+
+                    edicionActiva = null;
+
+                    mensajeInput.textContent =
+                        datos.message || "Tarea actualizada correctamente.";
+                    mensajeInput.className = "mensaje exito";
+
+                } catch (error) {
+                    mensajeInput.textContent = "No se pudo actualizar la tarea.";
+                    mensajeInput.className = "mensaje error";
+                    inputEditar.focus();
+                }
             }
             else if(e.key === "Escape"){
                 cancelarEdicion();
@@ -200,13 +284,47 @@ function crearTarea(titulo) {
 
     });
 
-    eliminarBtn.addEventListener("click", () => {
+    eliminarBtn.addEventListener("click", async () => {
         if (edicionActiva) {
             edicionActiva.inputEditar.focus();
             return;
         }
 
-        eliminarTarea(nuevaTarea);
+        const idTarea = nuevaTarea.dataset.id;
+
+        try {
+            const respuesta = await fetch(
+                `http://api.home/api/tareas/${idTarea}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const datos = await respuesta.json();
+
+            if (!respuesta.ok) {
+                checkbox.checked = !checkbox.checked;
+
+                mensajeInput.textContent = datos.error;
+                mensajeInput.className = "mensaje error";
+                return;
+            }
+
+            eliminarTarea(nuevaTarea);
+
+            mensajeInput.textContent = datos.message || "Tarea eliminada correctamente.";
+            mensajeInput.className = "mensaje exito";
+
+        } catch (error) {
+            checkbox.checked = !checkbox.checked;
+
+            mensajeInput.textContent = "No se pudo actualizar el estado de la tarea.";
+            mensajeInput.className = "mensaje error";
+            return;
+        }
     });
 }
 
@@ -301,3 +419,39 @@ function cancelarEdicion() {
 
     edicionActiva = null;
 }
+
+async function cargarTareas() {
+    try {
+        const respuesta = await fetch("http://api.home/api/tareas", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        tareas.innerHTML = "";
+
+        datos.data.forEach((tarea) => {
+            crearTarea(
+                tarea.titulo,
+                tarea.id,
+                Number(tarea.completada) === 1
+            );
+        });
+
+        contarTareas();
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudieron cargar las tareas.";
+        mensajeInput.className = "mensaje error";
+    }
+}
+
+cargarTareas();
