@@ -54,6 +54,10 @@ formulario.addEventListener("submit", async (e) => {
             })
         });
 
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
+
         const datos = await respuesta.json();
 
         if (!respuesta.ok) {
@@ -83,6 +87,16 @@ formulario.addEventListener("submit", async (e) => {
         mensajeInput.className = "mensaje error";
     }
 });
+
+function manejarSesionExpirada(respuesta) {
+    if (respuesta.status === 401) {
+        sessionStorage.clear();
+        window.location.href = "login.html";
+        return true;
+    }
+
+    return false;
+}
 
 function crearTarea(titulo, id = null, completada = false) {
     const nuevaTarea = document.createElement("li");
@@ -178,10 +192,26 @@ function crearTarea(titulo, id = null, completada = false) {
                 }
             );
 
+            if (manejarSesionExpirada(respuesta)) {
+                return;
+            }
+
             const datos = await respuesta.json();
 
+            if (!respuesta.ok) {
+                checkbox.checked = !checkbox.checked;
+
+                mensajeInput.textContent = datos.error;
+                mensajeInput.className = "mensaje error";
+                return;
+            }
+
         } catch (error) {
-            console.error(error);
+            checkbox.checked = !checkbox.checked;
+
+            mensajeInput.textContent = "No se pudo actualizar el estado de la tarea.";
+            mensajeInput.className = "mensaje error";
+            return;
         }
 
         if (checkbox.checked) {
@@ -253,6 +283,10 @@ function crearTarea(titulo, id = null, completada = false) {
                         }
                     );
 
+                    if (manejarSesionExpirada(respuesta)) {
+                        return;
+                    }
+
                     const datos = await respuesta.json();
 
                     if (!respuesta.ok) {
@@ -303,11 +337,13 @@ function crearTarea(titulo, id = null, completada = false) {
                 }
             );
 
+            if (manejarSesionExpirada(respuesta)) {
+                return;
+            }
+
             const datos = await respuesta.json();
 
             if (!respuesta.ok) {
-                checkbox.checked = !checkbox.checked;
-
                 mensajeInput.textContent = datos.error;
                 mensajeInput.className = "mensaje error";
                 return;
@@ -319,11 +355,8 @@ function crearTarea(titulo, id = null, completada = false) {
             mensajeInput.className = "mensaje exito";
 
         } catch (error) {
-            checkbox.checked = !checkbox.checked;
-
-            mensajeInput.textContent = "No se pudo actualizar el estado de la tarea.";
+            mensajeInput.textContent = "No se pudo eliminar la tarea.";
             mensajeInput.className = "mensaje error";
-            return;
         }
     });
 }
@@ -427,6 +460,10 @@ async function cargarTareas() {
                 "Authorization": `Bearer ${token}`
             }
         });
+
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
 
         const datos = await respuesta.json();
 
