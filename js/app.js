@@ -12,6 +12,7 @@ const textoOriginalBoton = textoBotonAgregar.textContent;
 const modalEliminar = document.getElementById("modal-eliminar");
 const botonCancelarEliminar = document.getElementById("cancelar-eliminar");
 const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
+const textoOriginalEliminar = botonConfirmarEliminar.textContent;
 
 let edicionActiva = null;
 let tareaPendienteEliminar = null;
@@ -495,15 +496,22 @@ async function cargarTareas() {
     }
 }
 
-botonCancelarEliminar.addEventListener("click", () => {
+function cerrarModalEliminar(devolverFoco = true) {
     modalEliminar.hidden = true;
     tareaPendienteEliminar = null;
 
-    if (botonEliminarOrigen) {
-        botonEliminarOrigen.focus();
-    }
-
+    const botonOrigen = botonEliminarOrigen;
     botonEliminarOrigen = null;
+
+    if (devolverFoco && botonOrigen) {
+        requestAnimationFrame(() => {
+            botonOrigen.focus();
+        });
+    }
+}
+
+botonCancelarEliminar.addEventListener("click", () => {
+    cerrarModalEliminar();
 });
 
 botonConfirmarEliminar.addEventListener("click", async () => {
@@ -515,6 +523,7 @@ botonConfirmarEliminar.addEventListener("click", async () => {
     const idTarea = tarea.dataset.id;
 
     botonConfirmarEliminar.disabled = true;
+    botonConfirmarEliminar.textContent = "Eliminando...";
 
     try {
         const respuesta = await fetch(
@@ -541,8 +550,7 @@ botonConfirmarEliminar.addEventListener("click", async () => {
 
         eliminarTarea(tarea);
 
-        modalEliminar.hidden = true;
-        tareaPendienteEliminar = null;
+        cerrarModalEliminar(false);
 
         if (tareas.children.length === 0) {
             mensajeInput.textContent = "No tienes tareas todavía.";
@@ -559,6 +567,7 @@ botonConfirmarEliminar.addEventListener("click", async () => {
 
     } finally {
         botonConfirmarEliminar.disabled = false;
+        botonConfirmarEliminar.textContent = textoOriginalEliminar;
     }
 });
 
@@ -568,14 +577,7 @@ document.addEventListener("keydown", (e) => {
     }
 
     if (e.key === "Escape") {
-        modalEliminar.hidden = true;
-        tareaPendienteEliminar = null;
-
-        if (botonEliminarOrigen) {
-            botonEliminarOrigen.focus();
-        }
-
-        botonEliminarOrigen = null;
+        cerrarModalEliminar();
         return;
     }
 
@@ -595,17 +597,7 @@ document.addEventListener("keydown", (e) => {
 
 modalEliminar.addEventListener("click", (e) => {
     if (e.target === modalEliminar) {
-        modalEliminar.hidden = true;
-        tareaPendienteEliminar = null;
-
-        const botonOrigen = botonEliminarOrigen;
-        botonEliminarOrigen = null;
-
-        requestAnimationFrame(() => {
-            if (botonOrigen) {
-                botonOrigen.focus();
-            }
-        });
+        cerrarModalEliminar();
     }
 });
 
