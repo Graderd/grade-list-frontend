@@ -13,6 +13,7 @@ const modalEliminar = document.getElementById("modal-eliminar");
 const botonCancelarEliminar = document.getElementById("cancelar-eliminar");
 const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
 const textoOriginalEliminar = botonConfirmarEliminar.textContent;
+const descripcionModalEliminar = document.getElementById("descripcion-modal-eliminar");
 
 let edicionActiva = null;
 let tareaPendienteEliminar = null;
@@ -346,6 +347,7 @@ function crearTarea(titulo, id = null, completada = false) {
 
         tareaPendienteEliminar = nuevaTarea;
         botonEliminarOrigen = eliminarBtn;
+        descripcionModalEliminar.textContent = `¿Seguro que quieres eliminar "${tituloTarea.textContent}"?`;
 
         modalEliminar.hidden = false;
         

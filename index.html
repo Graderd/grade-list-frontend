@@ -230,11 +230,23 @@
 
         </section>
 
-        <div id="modal-eliminar" class="modal" hidden>
+        <div
+            id="modal-eliminar"
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-modal-eliminar"
+            aria-describedby="descripcion-modal-eliminar"
+            hidden
+        >
             <div class="modal-contenido">
-                <h2>Eliminar tarea</h2>
+                <h2 id="titulo-modal-eliminar">
+                    Eliminar tarea
+                </h2>
 
-                <p>¿Seguro que quieres eliminar esta tarea?</p>
+                <p id="descripcion-modal-eliminar">
+                    ¿Seguro que quieres eliminar esta tarea?
+                </p>
 
                 <div class="modal-acciones">
                     <button type="button" id="cancelar-eliminar">
@@ -247,7 +259,7 @@
                 </div>
             </div>
         </div>
-        
+
     </main>
 
 
