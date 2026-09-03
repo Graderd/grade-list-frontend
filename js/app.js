@@ -5,9 +5,40 @@ const tareas = document.getElementById("tareas");
 const contadorTareas = document.getElementById("cantidad-tareas");
 const textoContador = document.getElementById("texto-contador");
 const filtros = document.querySelectorAll(".filtro");
-let edicionActiva = null;
+const botonCerrarSesion = document.getElementById("cerrar-sesion");
+const botonAgregar = formulario.querySelector('button[type="submit"]');
+const textoBotonAgregar = botonAgregar.querySelector(".texto-agregar");
+const textoOriginalBoton = textoBotonAgregar.textContent;
+const modalEliminar = document.getElementById("modal-eliminar");
+const botonCancelarEliminar = document.getElementById("cancelar-eliminar");
+const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
+const textoOriginalEliminar = botonConfirmarEliminar.textContent;
+const descripcionModalEliminar = document.getElementById("descripcion-modal-eliminar");
 
-formulario.addEventListener("submit", (e) => {
+let edicionActiva = null;
+let tareaPendienteEliminar = null;
+let botonEliminarOrigen = null;
+
+const token = sessionStorage.getItem("token");
+const usuarioGuardado = sessionStorage.getItem("usuario");
+
+if (!token || !usuarioGuardado) {
+    window.location.href = "login.html";
+}
+
+const nombreUsuario = document.getElementById("nombre-usuario");
+
+if (usuarioGuardado) {
+    const usuario = JSON.parse(usuarioGuardado);
+    nombreUsuario.textContent = `Hola, ${usuario.nombre}`;
+}
+
+botonCerrarSesion.addEventListener("click", () => {
+    sessionStorage.clear();
+    window.location.href = "login.html";
+});
+
+formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const titulo = tituloInput.value.trim();
@@ -19,31 +50,85 @@ formulario.addEventListener("submit", (e) => {
         return;
     }
 
+    botonAgregar.disabled = true;
+    textoBotonAgregar.textContent = "Agregando...";
+
     cancelarEdicion();
 
-    mensajeInput.textContent = "Tarea agregada correctamente.";
-    mensajeInput.className = "mensaje exito";
+    try {
+        const respuesta = await fetch(`${API_URL}/api/tareas`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                titulo
+            })
+        });
 
-    crearTarea(titulo);
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
 
-    tituloInput.value = "";
-    
-    const filtroActivo = document.querySelector(".filtro.activo");
-    const filtroSeleccionado = filtroActivo.dataset.filtro;
+        const datos = await respuesta.json();
 
-    filtrarTareas(filtroSeleccionado);
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        crearTarea(
+            datos.data.titulo,
+            datos.data.id,
+            false
+        );
+
+        mensajeInput.textContent = datos.message;
+        mensajeInput.className = "mensaje exito";
+
+        tituloInput.value = "";
+
+        const filtroActivo = document.querySelector(".filtro.activo");
+        const filtroSeleccionado = filtroActivo.dataset.filtro;
+
+        filtrarTareas(filtroSeleccionado);
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudo crear la tarea.";
+        mensajeInput.className = "mensaje error";
+    } finally {
+        botonAgregar.disabled = false;
+        textoBotonAgregar.textContent = textoOriginalBoton;
+    }
 });
 
-function crearTarea(titulo) {
+function manejarSesionExpirada(respuesta) {
+    if (respuesta.status === 401) {
+        sessionStorage.clear();
+        window.location.href = "login.html";
+        return true;
+    }
+
+    return false;
+}
+
+function crearTarea(titulo, id = null, completada = false) {
     const nuevaTarea = document.createElement("li");
     nuevaTarea.classList.add("tarea");
-    nuevaTarea.dataset.estado = "pendiente";
+    nuevaTarea.dataset.estado = completada ? "completada" : "pendiente";
+
+    if (id !== null) {
+        nuevaTarea.dataset.id = id;
+    }
 
     const label = document.createElement("label");
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.classList.add("checkbox-tarea");
+    checkbox.checked = completada;
 
     const tituloTarea = document.createElement("span");
     tituloTarea.classList.add("titulo");
@@ -57,7 +142,7 @@ function crearTarea(titulo) {
     // Agregar el estado de la tarea
     const estadoTarea = document.createElement("span");
     estadoTarea.classList.add("estado");
-    estadoTarea.textContent = "Pendiente";
+    estadoTarea.textContent = completada ? "Completada" : "Pendiente";
     nuevaTarea.appendChild(estadoTarea);
 
     // Agregar botones de editar y eliminar
@@ -107,8 +192,46 @@ function crearTarea(titulo) {
     tareas.appendChild(nuevaTarea);
 
     // Agregar evento al checkbox para cambiar el estado de la tarea
-    checkbox.addEventListener("change", () => {
+    checkbox.addEventListener("change", async () => {
         cancelarEdicion();
+
+        const idTarea = nuevaTarea.dataset.id;
+        checkbox.disabled = true;
+
+        try {
+            const respuesta = await fetch(
+                `${API_URL}/api/tareas/${idTarea}/toggle`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (manejarSesionExpirada(respuesta)) {
+                return;
+            }
+
+            const datos = await respuesta.json();
+
+            if (!respuesta.ok) {
+                checkbox.checked = !checkbox.checked;
+
+                mensajeInput.textContent = datos.error;
+                mensajeInput.className = "mensaje error";
+                return;
+            }
+
+        } catch (error) {
+            checkbox.checked = !checkbox.checked;
+
+            mensajeInput.textContent = "No se pudo actualizar el estado de la tarea.";
+            mensajeInput.className = "mensaje error";
+            return;
+        } finally {
+            checkbox.disabled = false;
+        }
 
         if (checkbox.checked) {
             nuevaTarea.dataset.estado = "completada";
@@ -150,7 +273,7 @@ function crearTarea(titulo) {
             inputEditar
         }
 
-        inputEditar.addEventListener("keydown", (e) => {
+        inputEditar.addEventListener("keydown", async (e) => {
             if(e.key === "Enter"){
                 //aqui
                 const nuevoTitulo = inputEditar.value.trim();
@@ -162,15 +285,52 @@ function crearTarea(titulo) {
                     return;
                 }
 
-                tituloTarea.textContent = nuevoTitulo;
-                label.replaceChild(tituloTarea, inputEditar);
+                inputEditar.disabled = true;
 
-                edicionActiva = null;
+                const idTarea = nuevaTarea.dataset.id;
 
-                mensajeInput.textContent = "Tarea actualizada correctamente.";
-                mensajeInput.className = "mensaje exito";
+                try {
+                    const respuesta = await fetch(
+                        `${API_URL}/api/tareas/${idTarea}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                titulo: nuevoTitulo
+                            })
+                        }
+                    );
 
-                console.log("Nuevo titulo:", nuevoTitulo);
+                    if (manejarSesionExpirada(respuesta)) {
+                        return;
+                    }
+
+                    const datos = await respuesta.json();
+
+                    if (!respuesta.ok) {
+                        mensajeInput.textContent = datos.error;
+                        mensajeInput.className = "mensaje error";
+                        return;
+                    }
+
+                    tituloTarea.textContent = nuevoTitulo;
+                    label.replaceChild(tituloTarea, inputEditar);
+
+                    edicionActiva = null;
+
+                    mensajeInput.textContent =
+                        datos.message || "Tarea actualizada correctamente.";
+                    mensajeInput.className = "mensaje exito";
+
+                } catch (error) {
+                    mensajeInput.textContent = "No se pudo actualizar la tarea.";
+                    mensajeInput.className = "mensaje error";
+                } finally {
+                    inputEditar.disabled = false;
+                }
             }
             else if(e.key === "Escape"){
                 cancelarEdicion();
@@ -185,7 +345,15 @@ function crearTarea(titulo) {
             return;
         }
 
-        eliminarTarea(nuevaTarea);
+        tareaPendienteEliminar = nuevaTarea;
+        botonEliminarOrigen = eliminarBtn;
+        descripcionModalEliminar.textContent = `¿Seguro que quieres eliminar "${tituloTarea.textContent}"?`;
+
+        modalEliminar.hidden = false;
+        
+        requestAnimationFrame(() => {
+            botonCancelarEliminar.focus();
+        });
     });
 }
 
@@ -280,3 +448,159 @@ function cancelarEdicion() {
 
     edicionActiva = null;
 }
+
+async function cargarTareas() {
+    mensajeInput.textContent = "Cargando tareas...";
+    mensajeInput.className = "mensaje";
+
+    try {
+        const respuesta = await fetch(`${API_URL}/api/tareas`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        tareas.innerHTML = "";
+
+        if (datos.data.length === 0) {
+            mensajeInput.textContent = "No tienes tareas todavía.";
+            mensajeInput.className = "mensaje";
+        } else {
+            mensajeInput.textContent = "";
+            mensajeInput.className = "mensaje";
+        }
+
+        datos.data.forEach((tarea) => {
+            crearTarea(
+                tarea.titulo,
+                tarea.id,
+                Number(tarea.completada) === 1
+            );
+        });
+
+        contarTareas();
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudieron cargar las tareas.";
+        mensajeInput.className = "mensaje error";
+    }
+}
+
+function cerrarModalEliminar(devolverFoco = true) {
+    modalEliminar.hidden = true;
+    tareaPendienteEliminar = null;
+
+    const botonOrigen = botonEliminarOrigen;
+    botonEliminarOrigen = null;
+
+    if (devolverFoco && botonOrigen) {
+        requestAnimationFrame(() => {
+            botonOrigen.focus();
+        });
+    }
+}
+
+botonCancelarEliminar.addEventListener("click", () => {
+    cerrarModalEliminar();
+});
+
+botonConfirmarEliminar.addEventListener("click", async () => {
+    if (!tareaPendienteEliminar) {
+        return;
+    }
+
+    const tarea = tareaPendienteEliminar;
+    const idTarea = tarea.dataset.id;
+
+    botonConfirmarEliminar.disabled = true;
+    botonConfirmarEliminar.textContent = "Eliminando...";
+
+    try {
+        const respuesta = await fetch(
+            `${API_URL}/api/tareas/${idTarea}`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        eliminarTarea(tarea);
+
+        cerrarModalEliminar(false);
+
+        if (tareas.children.length === 0) {
+            mensajeInput.textContent = "No tienes tareas todavía.";
+            mensajeInput.className = "mensaje";
+        } else {
+            mensajeInput.textContent =
+                datos.message || "Tarea eliminada correctamente.";
+            mensajeInput.className = "mensaje exito";
+        }
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudo eliminar la tarea.";
+        mensajeInput.className = "mensaje error";
+
+    } finally {
+        botonConfirmarEliminar.disabled = false;
+        botonConfirmarEliminar.textContent = textoOriginalEliminar;
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (modalEliminar.hidden) {
+        return;
+    }
+
+    if (e.key === "Escape") {
+        cerrarModalEliminar();
+        return;
+    }
+
+    if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === botonCancelarEliminar) {
+            e.preventDefault();
+            botonConfirmarEliminar.focus();
+        } else if (
+            !e.shiftKey &&
+            document.activeElement === botonConfirmarEliminar
+        ) {
+            e.preventDefault();
+            botonCancelarEliminar.focus();
+        }
+    }
+});
+
+modalEliminar.addEventListener("click", (e) => {
+    if (e.target === modalEliminar) {
+        cerrarModalEliminar();
+    }
+});
+
+cargarTareas();

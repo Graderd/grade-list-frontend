@@ -82,7 +82,7 @@ header {
     border-radius: 50%;
 }
 
-.usuario-info p {
+.usuario-info span {
     margin: 0;
 
     font-size: 14px;
@@ -399,12 +399,15 @@ main h1 {
 
 
 /* =========================
-   LISTA DE TAREAS
+LISTA DE TAREAS
 ========================= */
 
 #tareas {
-    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
+    list-style: none;
     margin: 0;
     padding: 0;
 }
@@ -468,57 +471,44 @@ main h1 {
 ========================= */
 
 .tarea button {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-
     gap: 6px;
 
-    padding: 6px 10px;
-
-    border-radius: 6px;
-
-    color: white;
-
-    font-size: 13px;
-    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 6px 4px;
 
     cursor: pointer;
-
-    transition: background-color 0.2s;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .tarea button .material-symbols-outlined {
     font-size: 18px;
+    line-height: 1;
 }
 
 
 /* Editar */
 
 .editar {
-    background-color: #4874F0;
-
-    border: 1px solid #4874F0;
+    color: #2563EB;
 }
 
 .editar:hover {
-    background-color: #315FDF;
-
-    border-color: #315FDF;
+    color: #1D4ED8;
 }
 
 
 /* Eliminar */
 
 .eliminar {
-    background-color: #E04848;
-
-    border: 1px solid #E04848;
+    color: #EF4444;
 }
 
 .eliminar:hover {
-    background-color: #C93434;
-
-    border-color: #C93434;
+    color: #DC2626;
 }
 
 
@@ -739,6 +729,7 @@ main h1 {
 
     .tarea button .material-symbols-outlined {
         font-size: 17px;
+        line-height: 1;
     }
 }
 
@@ -755,4 +746,79 @@ main h1 {
 
 .input-editar:focus {
     box-shadow: 0 2px 0 #0C309F;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(0, 0, 0, 0.45);
+
+    z-index: 1000;
+}
+
+.modal-contenido {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 24px;
+
+    background-color: #FFFFFF;
+
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+}
+
+.modal-contenido h2 {
+    margin: 0 0 12px;
+
+    font-size: 20px;
+}
+
+.modal-contenido p {
+    margin: 0 0 24px;
+
+    color: #5F6B7A;
+}
+
+.modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-acciones button {
+    padding: 9px 16px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#cancelar-eliminar {
+    border: 1px solid #D1D5DB;
+
+    background-color: #FFFFFF;
+    color: #13172F;
+}
+
+#confirmar-eliminar {
+    border: 1px solid #EF4444;
+
+    background-color: #EF4444;
+    color: #FFFFFF;
+}
+
+.modal[hidden] {
+    display: none;
 }
