@@ -9,8 +9,12 @@ const botonCerrarSesion = document.getElementById("cerrar-sesion");
 const botonAgregar = formulario.querySelector('button[type="submit"]');
 const textoBotonAgregar = botonAgregar.querySelector(".texto-agregar");
 const textoOriginalBoton = textoBotonAgregar.textContent;
+const modalEliminar = document.getElementById("modal-eliminar");
+const botonCancelarEliminar = document.getElementById("cancelar-eliminar");
+const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
 
 let edicionActiva = null;
+let tareaPendienteEliminar = null;
 
 const token = sessionStorage.getItem("token");
 const usuarioGuardado = sessionStorage.getItem("usuario");
@@ -332,61 +336,14 @@ function crearTarea(titulo, id = null, completada = false) {
 
     });
 
-    eliminarBtn.addEventListener("click", async () => {
+    eliminarBtn.addEventListener("click", () => {
         if (edicionActiva) {
             edicionActiva.inputEditar.focus();
             return;
         }
 
-        const confirmarEliminacion = confirm("¿Seguro que quieres eliminar esta tarea?");
-
-        if (!confirmarEliminacion) {
-            return;
-        }
-
-        const idTarea = nuevaTarea.dataset.id;
-        eliminarBtn.disabled = true;
-
-        try {
-            const respuesta = await fetch(
-                `${API_URL}/api/tareas/${idTarea}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
-
-            if (manejarSesionExpirada(respuesta)) {
-                return;
-            }
-
-            const datos = await respuesta.json();
-
-            if (!respuesta.ok) {
-                mensajeInput.textContent = datos.error;
-                mensajeInput.className = "mensaje error";
-                return;
-            }
-
-            eliminarTarea(nuevaTarea);
-
-            if (tareas.children.length === 0) {
-                mensajeInput.textContent = "No tienes tareas todavía.";
-                mensajeInput.className = "mensaje";
-            } else {
-                mensajeInput.textContent =
-                    datos.message || "Tarea eliminada correctamente.";
-                mensajeInput.className = "mensaje exito";
-            }
-
-        } catch (error) {
-            mensajeInput.textContent = "No se pudo eliminar la tarea.";
-            mensajeInput.className = "mensaje error";
-        } finally {
-            eliminarBtn.disabled = false;
-        }
+        tareaPendienteEliminar = nuevaTarea;
+        modalEliminar.hidden = false;
     });
 }
 
@@ -530,5 +487,66 @@ async function cargarTareas() {
         mensajeInput.className = "mensaje error";
     }
 }
+
+botonCancelarEliminar.addEventListener("click", () => {
+    modalEliminar.hidden = true;
+    tareaPendienteEliminar = null;
+});
+
+botonConfirmarEliminar.addEventListener("click", async () => {
+    if (!tareaPendienteEliminar) {
+        return;
+    }
+
+    const tarea = tareaPendienteEliminar;
+    const idTarea = tarea.dataset.id;
+
+    botonConfirmarEliminar.disabled = true;
+
+    try {
+        const respuesta = await fetch(
+            `${API_URL}/api/tareas/${idTarea}`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        if (manejarSesionExpirada(respuesta)) {
+            return;
+        }
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mensajeInput.textContent = datos.error;
+            mensajeInput.className = "mensaje error";
+            return;
+        }
+
+        eliminarTarea(tarea);
+
+        modalEliminar.hidden = true;
+        tareaPendienteEliminar = null;
+
+        if (tareas.children.length === 0) {
+            mensajeInput.textContent = "No tienes tareas todavía.";
+            mensajeInput.className = "mensaje";
+        } else {
+            mensajeInput.textContent =
+                datos.message || "Tarea eliminada correctamente.";
+            mensajeInput.className = "mensaje exito";
+        }
+
+    } catch (error) {
+        mensajeInput.textContent = "No se pudo eliminar la tarea.";
+        mensajeInput.className = "mensaje error";
+
+    } finally {
+        botonConfirmarEliminar.disabled = false;
+    }
+});
 
 cargarTareas();
