@@ -15,6 +15,7 @@ const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
 
 let edicionActiva = null;
 let tareaPendienteEliminar = null;
+let botonEliminarOrigen = null;
 
 const token = sessionStorage.getItem("token");
 const usuarioGuardado = sessionStorage.getItem("usuario");
@@ -343,7 +344,13 @@ function crearTarea(titulo, id = null, completada = false) {
         }
 
         tareaPendienteEliminar = nuevaTarea;
+        botonEliminarOrigen = eliminarBtn;
+
         modalEliminar.hidden = false;
+        
+        requestAnimationFrame(() => {
+            botonCancelarEliminar.focus();
+        });
     });
 }
 
@@ -491,6 +498,12 @@ async function cargarTareas() {
 botonCancelarEliminar.addEventListener("click", () => {
     modalEliminar.hidden = true;
     tareaPendienteEliminar = null;
+
+    if (botonEliminarOrigen) {
+        botonEliminarOrigen.focus();
+    }
+
+    botonEliminarOrigen = null;
 });
 
 botonConfirmarEliminar.addEventListener("click", async () => {
@@ -546,6 +559,53 @@ botonConfirmarEliminar.addEventListener("click", async () => {
 
     } finally {
         botonConfirmarEliminar.disabled = false;
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (modalEliminar.hidden) {
+        return;
+    }
+
+    if (e.key === "Escape") {
+        modalEliminar.hidden = true;
+        tareaPendienteEliminar = null;
+
+        if (botonEliminarOrigen) {
+            botonEliminarOrigen.focus();
+        }
+
+        botonEliminarOrigen = null;
+        return;
+    }
+
+    if (e.key === "Tab") {
+        if (e.shiftKey && document.activeElement === botonCancelarEliminar) {
+            e.preventDefault();
+            botonConfirmarEliminar.focus();
+        } else if (
+            !e.shiftKey &&
+            document.activeElement === botonConfirmarEliminar
+        ) {
+            e.preventDefault();
+            botonCancelarEliminar.focus();
+        }
+    }
+});
+
+modalEliminar.addEventListener("click", (e) => {
+    if (e.target === modalEliminar) {
+        modalEliminar.hidden = true;
+        tareaPendienteEliminar = null;
+
+        const botonOrigen = botonEliminarOrigen;
+        botonEliminarOrigen = null;
+
+        requestAnimationFrame(() => {
+            if (botonOrigen) {
+                botonOrigen.focus();
+            }
+        });
     }
 });
 
