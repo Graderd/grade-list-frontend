@@ -267,72 +267,143 @@ function crearTarea(titulo, id = null, completada = false) {
         inputEditar.focus();
         inputEditar.select();
 
+        const accionesEdicion = document.createElement("div");
+        accionesEdicion.classList.add("acciones-edicion");
+
+        const guardarBtn = document.createElement("button");
+        guardarBtn.type = "button";
+
+        const guardarIcono = document.createElement("span");
+        guardarIcono.classList.add("material-symbols-outlined");
+        guardarIcono.setAttribute("aria-hidden", "true");
+        guardarIcono.textContent = "save";
+
+        const guardarTexto = document.createElement("span");
+        guardarTexto.classList.add("texto-boton");
+        guardarTexto.textContent = "Guardar";
+
+        guardarBtn.appendChild(guardarIcono);
+        guardarBtn.appendChild(guardarTexto);
+
+        guardarBtn.classList.add("guardar-edicion");
+
+        const cancelarBtn = document.createElement("button");
+        cancelarBtn.type = "button";
+
+        const cancelarIcono = document.createElement("span");
+        cancelarIcono.classList.add("material-symbols-outlined");
+        cancelarIcono.setAttribute("aria-hidden", "true");
+        cancelarIcono.textContent = "close";
+
+        const cancelarTexto = document.createElement("span");
+        cancelarTexto.classList.add("texto-boton");
+        cancelarTexto.textContent = "Cancelar";
+
+        cancelarBtn.appendChild(cancelarIcono);
+        cancelarBtn.appendChild(cancelarTexto);
+
+        cancelarBtn.classList.add("cancelar-edicion");
+
+        accionesEdicion.appendChild(guardarBtn);
+        accionesEdicion.appendChild(cancelarBtn);
+
+        nuevaTarea.appendChild(accionesEdicion);
+
+        editarBtn.hidden = true;
+        eliminarBtn.hidden = true;
+
         edicionActiva = {
             label,
             tituloTarea,
-            inputEditar
-        }
+            inputEditar,
+            accionesEdicion,
+            editarBtn,
+            eliminarBtn
+        };
 
-        inputEditar.addEventListener("keydown", async (e) => {
-            if(e.key === "Enter"){
-                //aqui
-                const nuevoTitulo = inputEditar.value.trim();
+        async function guardarEdicion() {
+            const nuevoTitulo = inputEditar.value.trim();
 
-                mensajeInput.textContent = "";
-                mensajeInput.className = "mensaje";
+            mensajeInput.textContent = "";
+            mensajeInput.className = "mensaje";
 
-                if (!validarTitulo(nuevoTitulo)) {
+            if (!validarTitulo(nuevoTitulo)) {
+                return;
+            }
+
+            inputEditar.disabled = true;
+            guardarBtn.disabled = true;
+            cancelarBtn.disabled = true;
+
+            const textoOriginalGuardar = guardarBtn.textContent;
+            guardarBtn.textContent = "Guardando...";
+
+            const idTarea = nuevaTarea.dataset.id;
+
+            try {
+                const respuesta = await fetch(
+                    `${API_URL}/api/tareas/${idTarea}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            titulo: nuevoTitulo
+                        })
+                    }
+                );
+
+                if (manejarSesionExpirada(respuesta)) {
                     return;
                 }
 
-                inputEditar.disabled = true;
+                const datos = await respuesta.json();
 
-                const idTarea = nuevaTarea.dataset.id;
-
-                try {
-                    const respuesta = await fetch(
-                        `${API_URL}/api/tareas/${idTarea}`,
-                        {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                            body: JSON.stringify({
-                                titulo: nuevoTitulo
-                            })
-                        }
-                    );
-
-                    if (manejarSesionExpirada(respuesta)) {
-                        return;
-                    }
-
-                    const datos = await respuesta.json();
-
-                    if (!respuesta.ok) {
-                        mensajeInput.textContent = datos.error;
-                        mensajeInput.className = "mensaje error";
-                        return;
-                    }
-
-                    tituloTarea.textContent = nuevoTitulo;
-                    label.replaceChild(tituloTarea, inputEditar);
-
-                    edicionActiva = null;
-
-                    mensajeInput.textContent =
-                        datos.message || "Tarea actualizada correctamente.";
-                    mensajeInput.className = "mensaje exito";
-
-                } catch (error) {
-                    mensajeInput.textContent = "No se pudo actualizar la tarea.";
+                if (!respuesta.ok) {
+                    mensajeInput.textContent = datos.error;
                     mensajeInput.className = "mensaje error";
-                } finally {
-                    inputEditar.disabled = false;
+                    return;
                 }
+
+                tituloTarea.textContent = nuevoTitulo;
+                label.replaceChild(tituloTarea, inputEditar);
+
+                accionesEdicion.remove();
+
+                editarBtn.hidden = false;
+                eliminarBtn.hidden = false;
+
+                edicionActiva = null;
+
+                mensajeInput.textContent =
+                    datos.message || "Tarea actualizada correctamente.";
+                mensajeInput.className = "mensaje exito";
+
+            } catch (error) {
+                mensajeInput.textContent = "No se pudo actualizar la tarea.";
+                mensajeInput.className = "mensaje error";
+            } finally {
+                inputEditar.disabled = false;
+                guardarBtn.disabled = false;
+                cancelarBtn.disabled = false;
+                guardarBtn.textContent = textoOriginalGuardar;
             }
-            else if(e.key === "Escape"){
+        }
+
+        guardarBtn.addEventListener("click", () => {
+            guardarEdicion();
+        });
+
+        cancelarBtn.addEventListener("click", () => {
+            cancelarEdicion();
+        });
+
+        inputEditar.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                guardarEdicion();
+            } else if (e.key === "Escape") {
                 cancelarEdicion();
             }
         });
@@ -442,9 +513,21 @@ function cancelarEdicion() {
         return;
     }
 
-    const { label, tituloTarea, inputEditar } = edicionActiva;
+    const {
+        label,
+        tituloTarea,
+        inputEditar,
+        accionesEdicion,
+        editarBtn,
+        eliminarBtn
+    } = edicionActiva;
 
     label.replaceChild(tituloTarea, inputEditar);
+
+    accionesEdicion.remove();
+
+    editarBtn.hidden = false;
+    eliminarBtn.hidden = false;
 
     edicionActiva = null;
 }

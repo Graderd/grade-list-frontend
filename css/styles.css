@@ -731,6 +731,25 @@ LISTA DE TAREAS
         font-size: 17px;
         line-height: 1;
     }
+
+    .tarea {
+        gap: 8px;
+    }
+
+    .tarea label {
+        min-width: 0;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .checkbox-tarea {
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+
+    .input-editar {
+        margin-right: 4px;
+    }
 }
 
 .input-editar {
@@ -746,6 +765,37 @@ LISTA DE TAREAS
 
 .input-editar:focus {
     box-shadow: 0 2px 0 #0C309F;
+}
+
+.tarea .acciones-edicion {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tarea .guardar-edicion,
+.tarea .cancelar-edicion {
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.tarea .guardar-edicion {
+    color: #0C309F;
+}
+
+.tarea .cancelar-edicion {
+    color: #5F6B7A;
+}
+
+.tarea .guardar-edicion:hover,
+.tarea .cancelar-edicion:hover {
+    text-decoration: none;
+    opacity: 0.8;
 }
 
 .modal {
@@ -820,5 +870,9 @@ LISTA DE TAREAS
 }
 
 .modal[hidden] {
+    display: none;
+}
+
+.tarea button[hidden] {
     display: none;
 }
