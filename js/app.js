@@ -15,6 +15,7 @@ const botonConfirmarEliminar = document.getElementById("confirmar-eliminar");
 const textoOriginalEliminar = botonConfirmarEliminar.textContent;
 const descripcionModalEliminar = document.getElementById("descripcion-modal-eliminar");
 
+let eliminandoTarea = false;
 let edicionActiva = null;
 let tareaPendienteEliminar = null;
 let botonEliminarOrigen = null;
@@ -499,8 +500,8 @@ function validarTitulo(titulo) {
         mensajeInput.className = "mensaje error";
         return false;
 
-    } else if (titulo.length > 50) {
-        mensajeInput.textContent = "El título no puede tener más de 50 caracteres.";
+    } else if (titulo.length > 255) {
+        mensajeInput.textContent = "El título no puede tener más de 255 caracteres.";
         mensajeInput.className = "mensaje error";
         return false;
     }
@@ -610,6 +611,8 @@ botonConfirmarEliminar.addEventListener("click", async () => {
     botonConfirmarEliminar.disabled = true;
     botonConfirmarEliminar.textContent = "Eliminando...";
 
+    eliminandoTarea = true;
+
     try {
         const respuesta = await fetch(
             `${API_URL}/api/tareas/${idTarea}`,
@@ -653,6 +656,7 @@ botonConfirmarEliminar.addEventListener("click", async () => {
     } finally {
         botonConfirmarEliminar.disabled = false;
         botonConfirmarEliminar.textContent = textoOriginalEliminar;
+        eliminandoTarea = false;
     }
 });
 
@@ -662,6 +666,10 @@ document.addEventListener("keydown", (e) => {
     }
 
     if (e.key === "Escape") {
+        if (eliminandoTarea) {
+            return;
+        }
+
         cerrarModalEliminar();
         return;
     }
@@ -681,7 +689,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 modalEliminar.addEventListener("click", (e) => {
-    if (e.target === modalEliminar) {
+    if (e.target === modalEliminar && !eliminandoTarea) {
         cerrarModalEliminar();
     }
 });

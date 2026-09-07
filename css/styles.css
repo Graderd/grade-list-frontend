@@ -564,7 +564,7 @@ LISTA DE TAREAS
         height: 30px;
     }
 
-    .usuario-info p {
+    .usuario-info span {
         font-size: 12px;
     }
 
@@ -875,4 +875,21 @@ LISTA DE TAREAS
 
 .tarea button[hidden] {
     display: none;
+}
+
+.titulo {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+#descripcion-modal-eliminar {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+.modal-contenido {
+    min-width: 0;
+    overflow: hidden;
 }
