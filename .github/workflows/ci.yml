@@ -1,0 +1,45 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validar frontend y Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+
+      - name: Verificar archivos principales
+        run: |
+          test -f index.html
+          test -f login.html
+          test -f register.html
+          test -f Dockerfile
+          test -f nginx.conf
+          test -f docker-compose.yml
+
+      - name: Validar Docker Compose
+        run: docker compose config --quiet
+
+      - name: Construir imagen Docker
+        run: docker build -t grade-list-frontend:${{ github.sha }} .
+
+      - name: Validar configuracion de Nginx
+        run: |
+          docker run --rm \
+            grade-list-frontend:${{ github.sha }} \
+            nginx -t
