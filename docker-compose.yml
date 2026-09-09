@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build:
+      context: .
+    container_name: grade-list-frontend
+    restart: unless-stopped
+
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true
