@@ -1,7 +1,6 @@
 services:
   frontend:
-    build:
-      context: .
+    image: ghcr.io/graderd/grade-list-frontend:v1.0.0
     container_name: grade-list-frontend
     restart: unless-stopped
 
