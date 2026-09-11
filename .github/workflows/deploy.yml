@@ -9,6 +9,13 @@ on:
         default: "v1.0.0"
         type: string
 
+  workflow_call:
+    inputs:
+      version:
+        description: "Version de la imagen a desplegar"
+        required: true
+        type: string
+
 permissions:
   contents: read
   packages: read
@@ -57,3 +64,5 @@ jobs:
           echo "Imagen actual:   $ACTUAL_IMAGE"
 
           test "$ACTUAL_IMAGE" = "$EXPECTED_IMAGE"
+
+          printf 'FRONTEND_VERSION=%s\n' "$FRONTEND_VERSION" > .env
