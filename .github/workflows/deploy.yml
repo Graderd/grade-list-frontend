@@ -9,12 +9,6 @@ on:
         default: "v1.0.0"
         type: string
 
-      simulate_failure:
-        description: "Simular fallo para probar rollback"
-        required: false
-        default: false
-        type: boolean
-
   workflow_call:
     inputs:
       version:
@@ -22,11 +16,6 @@ on:
         required: true
         type: string
 
-      simulate_failure:
-        description: "Simular fallo para probar rollback"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -54,7 +43,6 @@ jobs:
         env:
           FRONTEND_VERSION: ${{ inputs.version }}
           DEPLOY_DIR: /srv/docker/stacks/frontend/grade-list-frontend
-          SIMULATE_FAILURE: ${{ inputs.simulate_failure }}
         run: |
           set -euo pipefail
 
@@ -156,11 +144,6 @@ jobs:
 
             sleep 3
           done
-
-          if [ "$SIMULATE_FAILURE" = "true" ]; then
-            echo "SIMULACION: forzando fallo del smoke test"
-            HTTP_CODE="599"
-          fi
 
           if [ "$HTTP_CODE" != "200" ]; then
             echo "ERROR: smoke test fallido para $FRONTEND_VERSION"
