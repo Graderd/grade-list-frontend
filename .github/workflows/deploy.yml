@@ -1,0 +1,59 @@
+name: Deploy frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version de la imagen a desplegar (ej. v1.0.0)"
+        required: true
+        default: "v1.0.0"
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    name: Desplegar frontend
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - production
+      - frontend
+
+    steps:
+      - name: Iniciar sesion en GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desplegar version
+        env:
+          FRONTEND_VERSION: ${{ inputs.version }}
+          DEPLOY_DIR: /srv/docker/stacks/frontend/grade-list-frontend
+        run: |
+          set -euo pipefail
+
+          cd "$DEPLOY_DIR"
+
+          echo "Desplegando $FRONTEND_VERSION"
+
+          FRONTEND_VERSION="$FRONTEND_VERSION" docker compose pull frontend
+
+          printf 'FRONTEND_VERSION=%s\n' "$FRONTEND_VERSION" > .env
+
+          docker compose up -d frontend
+
+          docker compose ps frontend
+
+          ACTUAL_IMAGE="$(docker inspect grade-list-frontend --format '{{.Config.Image}}')"
+          EXPECTED_IMAGE="ghcr.io/graderd/grade-list-frontend:$FRONTEND_VERSION"
+
+          echo "Imagen esperada: $EXPECTED_IMAGE"
+          echo "Imagen actual:   $ACTUAL_IMAGE"
+
+          test "$ACTUAL_IMAGE" = "$EXPECTED_IMAGE"
