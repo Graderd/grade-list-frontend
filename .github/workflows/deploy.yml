@@ -47,13 +47,66 @@ jobs:
 
           cd "$DEPLOY_DIR"
 
+          PREVIOUS_VERSION="$(sed -n 's/^FRONTEND_VERSION=//p' .env | head -n 1)"
+
+          if [ -z "$PREVIOUS_VERSION" ]; then
+            echo "No se pudo determinar la version anterior"
+            exit 1
+          fi
+
+          echo "Version anterior: $PREVIOUS_VERSION"
+          echo "Nueva version:    $FRONTEND_VERSION"
+
+          rollback() {
+            echo "Iniciando rollback a $PREVIOUS_VERSION..."
+
+            FRONTEND_VERSION="$PREVIOUS_VERSION" docker compose pull frontend
+            FRONTEND_VERSION="$PREVIOUS_VERSION" docker compose up -d frontend
+
+            ROLLBACK_IMAGE="$(docker inspect grade-list-frontend --format '{{.Config.Image}}')"
+            EXPECTED_ROLLBACK_IMAGE="ghcr.io/graderd/grade-list-frontend:$PREVIOUS_VERSION"
+
+            echo "Imagen esperada tras rollback: $EXPECTED_ROLLBACK_IMAGE"
+            echo "Imagen actual tras rollback:   $ROLLBACK_IMAGE"
+
+            if [ "$ROLLBACK_IMAGE" != "$EXPECTED_ROLLBACK_IMAGE" ]; then
+              echo "ERROR: el rollback no levanto la imagen esperada"
+              return 1
+            fi
+
+            ROLLBACK_HTTP=""
+
+            for intento in 1 2 3 4 5; do
+              ROLLBACK_HTTP="$(curl -sS -o /dev/null -w '%{http_code}' \
+                -H 'Host: grade.home' \
+                http://10.0.0.84/ || true)"
+
+              echo "Rollback intento $intento: HTTP $ROLLBACK_HTTP"
+
+              if [ "$ROLLBACK_HTTP" = "200" ]; then
+                echo "Rollback completado correctamente"
+                return 0
+              fi
+
+              sleep 3
+            done
+
+            echo "ERROR: el rollback tampoco paso el smoke test"
+            return 1
+          }
+
           echo "Desplegando $FRONTEND_VERSION"
 
           FRONTEND_VERSION="$FRONTEND_VERSION" docker compose pull frontend
 
-          printf 'FRONTEND_VERSION=%s\n' "$FRONTEND_VERSION" > .env
+          if ! env FRONTEND_VERSION="$FRONTEND_VERSION" docker compose up -d frontend; then
+            echo "ERROR: no se pudo levantar $FRONTEND_VERSION"
+            echo "Volviendo a $PREVIOUS_VERSION..."
 
-          docker compose up -d frontend
+            rollback
+
+            exit 1
+          fi
 
           docker compose ps frontend
 
@@ -63,9 +116,16 @@ jobs:
           echo "Imagen esperada: $EXPECTED_IMAGE"
           echo "Imagen actual:   $ACTUAL_IMAGE"
 
-          test "$ACTUAL_IMAGE" = "$EXPECTED_IMAGE"
+          if [ "$ACTUAL_IMAGE" != "$EXPECTED_IMAGE" ]; then
+            echo "ERROR: la imagen desplegada no coincide con la esperada"
+            echo "Volviendo a $PREVIOUS_VERSION..."
 
-                    echo "Ejecutando smoke test..."
+            rollback
+
+            exit 1
+          fi
+
+          echo "Ejecutando smoke test..."
 
           HTTP_CODE=""
 
@@ -84,6 +144,15 @@ jobs:
             sleep 3
           done
 
-          test "$HTTP_CODE" = "200"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "ERROR: smoke test fallido para $FRONTEND_VERSION"
+            echo "Volviendo a $PREVIOUS_VERSION..."
+
+            rollback
+
+            exit 1
+          fi
 
           printf 'FRONTEND_VERSION=%s\n' "$FRONTEND_VERSION" > .env
+
+          echo "Deploy de $FRONTEND_VERSION completado correctamente"
