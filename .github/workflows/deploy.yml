@@ -154,6 +154,23 @@ jobs:
             exit 1
           fi
 
-          printf 'FRONTEND_VERSION=%s\n' "$FRONTEND_VERSION" > .env
+          TEMP_ENV="$(mktemp)"
+
+          awk -v version="$FRONTEND_VERSION" '
+            BEGIN { updated = 0 }
+            /^FRONTEND_VERSION=/ {
+              print "FRONTEND_VERSION=" version
+              updated = 1
+              next
+            }
+            { print }
+            END {
+              if (!updated)
+                print "FRONTEND_VERSION=" version
+            }
+          ' .env > "$TEMP_ENV"
+
+          cat "$TEMP_ENV" > .env
+          rm -f "$TEMP_ENV"
 
           echo "Deploy de $FRONTEND_VERSION completado correctamente"
