@@ -4,6 +4,9 @@ services:
     container_name: grade-list-frontend
     restart: unless-stopped
 
+    environment:
+      API_URL: ${API_URL:-http://api.home}
+
     networks:
       - proxy-net
 
