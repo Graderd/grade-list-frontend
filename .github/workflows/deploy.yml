@@ -80,7 +80,7 @@ jobs:
             for intento in 1 2 3 4 5; do
               ROLLBACK_HTTP="$(curl -sS -o /dev/null -w '%{http_code}' \
                 -H 'Host: grade.home' \
-                http://10.0.0.84/ || true)"
+                http://127.0.0.1/ || true)"
 
               echo "Rollback intento $intento: HTTP $ROLLBACK_HTTP"
 
@@ -133,7 +133,7 @@ jobs:
           for intento in 1 2 3 4 5; do
             HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
               -H 'Host: grade.home' \
-              http://10.0.0.84/ || true)"
+              http://127.0.0.1/ || true)"
 
             echo "Intento $intento: HTTP $HTTP_CODE"
 
