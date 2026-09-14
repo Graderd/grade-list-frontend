@@ -32,50 +32,60 @@ El frontend se comunica con el backend mediante HTTP y utiliza JWT para acceder 
 
 ## Arquitectura general
 
-```text
-Usuario
-   │
-   ▼
-Navegador
-   │
-   ▼
-Grade List Frontend
-HTML + CSS + JavaScript
-   │
-   ▼
-Nginx
-   │
-   ▼
-Nginx Proxy Manager
-   │
-   ▼
-Grade List API
-Node.js + Express
-   │
-   ▼
-MySQL
+```mermaid
+flowchart TB
+
+    USER[Usuario / Navegador]
+
+    subgraph APP["Aplicación"]
+        NPM[Nginx Proxy Manager]
+        FE[Grade List Frontend<br/>HTML + CSS + JavaScript]
+        API[Grade List API<br/>Node.js + Express]
+        DB[(MySQL)]
+    end
+
+    USER -->|grade.home| NPM
+    NPM --> FE
+    FE -->|api.home| NPM
+    NPM --> API
+    API --> DB
+
+    subgraph BACKUP["Backups"]
+        LOCAL[Backup local<br/>7 días]
+        NAS[TrueNAS<br/>30 días]
+    end
+
+    DB --> LOCAL
+    LOCAL -->|Copia + SHA-256| NAS
+
+    subgraph OBS["Observabilidad"]
+        PROM[Prometheus]
+        GRAF[Grafana]
+        NODE[node-exporter]
+        CAD[cAdvisor]
+    end
+
+    PROM -->|/metrics| API
+    PROM --> NODE
+    PROM --> CAD
+    GRAF --> PROM
+
+    subgraph CICD["CI/CD"]
+        GH[GitHub]
+        ACTIONS[GitHub Actions]
+        GHCR[GitHub Container Registry]
+        DEPLOY[todo-list-deploy]
+        RUNNER[Self-hosted Runner]
+    end
+
+    GH --> ACTIONS
+    ACTIONS --> GHCR
+    ACTIONS --> DEPLOY
+    DEPLOY --> RUNNER
+    RUNNER -->|Deploy| API
 ```
 
-En el entorno del homelab:
-
-```text
-Usuario
-   │
-   ▼
-http://grade.home
-   │
-   ▼
-Nginx Proxy Manager
-   │
-   ▼
-grade-list-frontend
-   │
-   ▼
-http://api.home
-   │
-   ▼
-Grade List API
-```
+La arquitectura separa la aplicación, los backups, la observabilidad y el flujo CI/CD utilizado para desplegar Grade List.
 
 ---
 
