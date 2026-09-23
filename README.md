@@ -335,7 +335,7 @@ La URL del backend no está fijada directamente dentro de la imagen Docker.
 Se configura mediante:
 
 ```env
-API_URL=https://api.stflab.dev
+API_URL=http://api.home
 ```
 
 El archivo de referencia es:
@@ -348,7 +348,7 @@ Ejemplo:
 
 ```env
 FRONTEND_VERSION=v1.0.0
-API_URL=https://api.stflab.dev
+API_URL=http://api.home
 ```
 
 Esto permite utilizar diferentes URLs de API dependiendo del entorno.
@@ -941,7 +941,7 @@ El frontend cuenta actualmente con:
 Versión validada:
 
 ```text
-v1.0.1
+v1.0.2
 ```
 
 Configuración:
