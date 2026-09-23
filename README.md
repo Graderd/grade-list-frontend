@@ -36,17 +36,21 @@ El frontend se comunica con el backend mediante HTTP y utiliza JWT para acceder 
 flowchart TB
 
     USER[Usuario / Navegador]
+    CF[Cloudflare<br/>DNS + HTTPS + Tunnel + WAF]
 
-    subgraph APP["Aplicación"]
+    subgraph APP["Aplicación / Homelab"]
         NPM[Nginx Proxy Manager]
         FE[Grade List Frontend<br/>HTML + CSS + JavaScript]
         API[Grade List API<br/>Node.js + Express]
         DB[(MySQL)]
     end
 
-    USER -->|grade.home| NPM
+    USER --> CF
+    CF -->|grade.stflab.dev| NPM
     NPM --> FE
-    FE -->|api.home| NPM
+
+    FE -->|https://api.stflab.dev| CF
+    CF -->|api.stflab.dev| NPM
     NPM --> API
     API --> DB
 
@@ -65,7 +69,7 @@ flowchart TB
         CAD[cAdvisor]
     end
 
-    PROM -->|/metrics| API
+    PROM -->|/metrics interno| API
     PROM --> NODE
     PROM --> CAD
     GRAF --> PROM
@@ -74,18 +78,16 @@ flowchart TB
         GH[GitHub]
         ACTIONS[GitHub Actions]
         GHCR[GitHub Container Registry]
-        DEPLOY[todo-list-deploy]
         RUNNER[Self-hosted Runner]
     end
 
     GH --> ACTIONS
     ACTIONS --> GHCR
-    ACTIONS --> DEPLOY
-    DEPLOY --> RUNNER
-    RUNNER -->|Deploy| API
+    ACTIONS --> RUNNER
+    RUNNER -->|Deploy| FE
 ```
 
-La arquitectura separa la aplicación, los backups, la observabilidad y el flujo CI/CD utilizado para desplegar Grade List.
+La arquitectura separa el acceso público mediante Cloudflare, la aplicación desplegada en el homelab, los backups, la observabilidad y el flujo CI/CD.
 
 ---
 
@@ -386,7 +388,7 @@ con el valor real de la variable `API_URL`.
 En producción:
 
 ```javascript
-const API_URL = "http://api.home";
+const API_URL = "https://api.stflab.dev";
 ```
 
 El flujo es:
@@ -450,8 +452,8 @@ ghcr.io/graderd/grade-list-frontend:${FRONTEND_VERSION}
 Ejemplo de configuración:
 
 ```env
-FRONTEND_VERSION=v1.0.1
-API_URL=http://api.home
+FRONTEND_VERSION=v1.0.2
+API_URL=https://api.stflab.dev
 ```
 
 La red:
@@ -640,7 +642,7 @@ Antes de desplegar una nueva versión, el workflow obtiene la versión estable a
 Ejemplo:
 
 ```text
-FRONTEND_VERSION=v1.0.1
+FRONTEND_VERSION=v1.0.2
 ```
 
 Si la nueva versión falla, el workflow puede restaurar automáticamente la anterior.
@@ -860,6 +862,38 @@ La carpeta `js/` contiene los scripts responsables de autenticación, tareas, co
 
 ---
 
+## Demo pública
+
+Grade List dispone de una demo pública accesible mediante HTTPS:
+
+```text
+https://grade.stflab.dev
+```
+
+La API pública utilizada por el frontend está disponible en:
+
+```text
+https://api.stflab.dev
+```
+
+El acceso desde Internet se realiza mediante **Cloudflare Tunnel**, mientras que la aplicación continúa ejecutándose dentro del homelab.
+
+En producción, el frontend recibe la URL de la API mediante configuración en runtime:
+
+```env
+API_URL=https://api.stflab.dev
+```
+
+Esto permite cambiar el endpoint utilizado por el frontend sin reconstruir la imagen Docker.
+
+La demo pública fue validada de extremo a extremo:
+
+```text
+Registro → Login → Crear → Editar → Completar → Eliminar → Cerrar sesión
+```
+
+---
+
 ## Estado actual
 
 El frontend cuenta actualmente con:
@@ -907,20 +941,20 @@ El frontend cuenta actualmente con:
 Versión validada:
 
 ```text
-v1.0.1
+v1.0.2
 ```
 
 Configuración:
 
 ```env
-FRONTEND_VERSION=v1.0.1
-API_URL=http://api.home
+FRONTEND_VERSION=v1.0.2
+API_URL=https://api.stflab.dev
 ```
 
 Imagen:
 
 ```text
-ghcr.io/graderd/grade-list-frontend:v1.0.1
+ghcr.io/graderd/grade-list-frontend:v1.0.2
 ```
 
 La aplicación se encuentra disponible internamente mediante:
